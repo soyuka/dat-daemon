@@ -1,0 +1,28 @@
+{
+  "name": "dat-daemon",
+  "version": "1.0.0",
+  "description": "Dat daemon",
+  "main": "cli/daemon.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "npm test"
+  },
+  "keywords": [
+    "dat"
+  ],
+  "author": "soyuka",
+  "license": "MIT",
+  "dependencies": {
+    "dat-link-resolve": "^1.1.1",
+    "dat-node": "^3.5.1",
+    "first-existing-path": "^1.0.1",
+    "fs-jetpack": "^1.1.0",
+    "memory-cache": "^0.2.0",
+    "minimist": "^1.2.0",
+    "multidat": "^5.0.2",
+    "toiletdb": "^1.4.0"
+  }
+}

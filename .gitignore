@@ -1,0 +1,3 @@
+.dat
+test/fixtures/metadata/*
+node_modules
