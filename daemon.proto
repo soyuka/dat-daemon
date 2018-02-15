@@ -1,0 +1,28 @@
+message Instruction {
+  enum Action {
+    ADD = 0;
+    REMOVE = 1;
+    START = 2;
+    PAUSE = 3;
+    STATISTICS = 4;
+    LIST = 5;
+  }
+
+  required Action action = 1;
+  optional string key = 2;
+  optional string directory = 3;
+}
+
+message Answer {
+  required string message = 1;
+  optional bool failure = 2 [default = 0];
+}
+
+message Dat {
+  required string key = 1;
+  required string directory = 2;
+}
+
+message List {
+  repeated Dat list = 1;
+}
