@@ -28,7 +28,7 @@ pm2 start datdaemond
 ```
 Usage: datdaemon [action] [key] [directory]
 
-Where "action" one of: ${Object.keys(Instruction.Action).map(e => e.toLowerCase()).join(', ')}
+Where "action" one of: add, remove, start, pause, statistics, list
 
 The "key" is a dat resolvable key.
 
