@@ -1,5 +1,5 @@
 {
-  "socket": "datdaemon.sock",
   "data": ".datdaemon",
-  "database": ".datdaemon/database"
+  "database": "database",
+  "socket": "datdaemon.sock"
 }

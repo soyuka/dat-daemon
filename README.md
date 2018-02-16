@@ -58,11 +58,10 @@ Configuration location: `~/.config/dat-daemon/config.json`:
 
 ```json
 {
-  // The daemon socket
-  "socket": "datdaemon.sock",
-  // Where the data will be stored by default (if you don't specify a directory above)
   "data": ".datdaemon",
-  // Where the level database is
-  "database": ".datdaemon/database"
+  "database": "database", // name of the level database
+  "socket": "datdaemon.sock" // name of the socket
 }
 ```
+
+Everything will be stored in `data`. If you don't specify a directory when adding a dat it'll be downloaded there too.
