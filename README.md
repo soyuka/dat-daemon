@@ -58,7 +58,7 @@ Configuration location: `~/.config/dat-daemon/config.json`:
 
 ```json
 {
-  "data": ".datdaemon",
+  "data": "~/.config/dat-daemon",
   "database": "database", // name of the level database
   "socket": "datdaemon.sock" // name of the socket
 }

@@ -23,7 +23,6 @@
   "dependencies": {
     "dat-link-resolve": "^2.1.0",
     "dat-node": "^3.5.8",
-    "first-existing-path": "^1.0.1",
     "level": "^2.1.2",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
