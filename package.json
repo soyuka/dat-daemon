@@ -1,6 +1,6 @@
 {
   "name": "dat-daemon",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Dat daemon",
   "main": "cli/daemon.js",
   "directories": {
