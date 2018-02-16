@@ -13,9 +13,21 @@ message Instruction {
   optional string directory = 3;
 }
 
+message Statistics {
+  required int64 files = 1;
+  required int64 connected = 2;
+  required int64 byteLength = 3;
+  required int64 version = 4;
+  required float downloadSpeed = 5;
+  required float uploadSpeed = 6;
+  required float totalPeers = 7;
+  required float completePeers = 8;
+}
+
 message Answer {
   required string message = 1;
-  optional bool failure = 2 [default = 0];
+  optional Statistics statistics = 2;
+  optional bool failure = 3 [default = 0];
 }
 
 message Dat {
