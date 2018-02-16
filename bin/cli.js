@@ -30,7 +30,9 @@ async function getMessage () {
       key = await datResolve(key)
     }
 
-    directory = path.resolve(process.cwd(), argv._[2])
+    if (argv._[2]) {
+      directory = path.resolve(process.cwd(), argv._[2])
+    }
   }
 
   return Instruction.encode({action, key, directory})
