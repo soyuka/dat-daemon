@@ -1,6 +1,6 @@
 {
   "name": "dat-daemon",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "Dat daemon",
   "main": "cli/daemon.js",
   "directories": {
@@ -13,7 +13,7 @@
     "datdaemon": "./bin/cli.js"
   },
   "scripts": {
-    "test": "npm test"
+    "test": "standard && tape test/*.js"
   },
   "keywords": [
     "dat"
@@ -28,5 +28,10 @@
     "mkdirp": "^0.5.1",
     "prettier-bytes": "^1.0.4",
     "protocol-buffers-encodings": "^1.1.0"
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.2",
+    "standard": "^10.0.3",
+    "tape": "^4.8.0"
   }
 }

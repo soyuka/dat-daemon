@@ -65,3 +65,16 @@ Configuration location: `~/.config/dat-daemon/config.json`:
 ```
 
 Everything will be stored in `data`. If you don't specify a directory when adding a dat it'll be downloaded there too.
+
+The configuration directory can be overwritten with the env variable `DATDAEMON_CONFIG`.
+
+## Client
+
+You can build your own tcp client to communicate with the daemon, the included command line tool is only an example.
+The client should:
+
+- use the local socket
+- send protobuf Instruction buffers
+- receive protobuf Answer
+
+See [daemon.proto](https://github.com/soyuka/dat-daemon/blob/master/daemon.proto) file.

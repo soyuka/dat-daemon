@@ -1,3 +1,4 @@
 .dat
-test/fixtures/metadata/*
+test/fixtures/datdaemon
+test/fixtures/dat/.dat
 node_modules
