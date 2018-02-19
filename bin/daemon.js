@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-
 const net = require('net')
 const fs = require('fs')
+const {Transform} = require('stream')
 const config = require('../lib/config')()
 const {onmessage, joinNetworks, close, updateState} = require('..')
 var server
@@ -24,9 +24,18 @@ function unlink () {
 }
 
 function onconnection (socket) {
-  socket.on('data', async function (message) {
-    socket.write(await onmessage(message))
-  })
+  socket.pipe(
+    new Transform({
+      async transform (chunk, enc, cb) {
+        try {
+          this.push(await onmessage(chunk))
+          cb()
+        } catch (err) {
+          cb(err)
+        }
+      }
+    })
+  ).pipe(socket)
 }
 
 function onexit () {
