@@ -1,5 +1,7 @@
 # DatDaemon
 
+[![Build Status](https://travis-ci.org/soyuka/dat-daemon.svg?branch=master)](https://travis-ci.org/soyuka/dat-daemon)
+
 Helps to share multiple dats.
 
 ## Why?
@@ -17,10 +19,16 @@ datdaemond &
 datdaemon add dat://peer-to-peer-web.com/ peer-to-peer-web
 ```
 
-You can daemonize the `datdaemond` with [lil-pids](https://github.com/mafintosh/lil-pids) or [pm2](https://github.com/Unitech/pm2):
+You can daemonize the `datdaemond` with [pm2](https://github.com/Unitech/pm2):
 
 ```
 pm2 start datdaemond
+```
+
+Or [lil-pids](https://github.com/mafintosh/lil-pids):
+
+```
+lil-pids ./services
 ```
 
 ## CLI
