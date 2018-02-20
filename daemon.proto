@@ -11,6 +11,7 @@ message Instruction {
   required Action action = 1;
   optional string key = 2;
   optional string directory = 3;
+  optional Options options = 4;
 }
 
 message Statistics {
@@ -30,9 +31,20 @@ message Answer {
   optional bool failure = 3 [default = 0];
 }
 
+message Options {
+  optional bool sparse = 1 [default = false];
+  // Network options
+  optional bool upload = 2 [default = true];
+  optional bool download = 3 [default = true];
+  optional int32 port = 4;
+  optional bool utp = 5 [default = true];
+  optional bool tcp = 6 [default = true];
+}
+
 message Dat {
   required string key = 1;
   required string directory = 2;
+  optional Options options = 3;
 }
 
 message List {
