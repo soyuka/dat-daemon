@@ -4,7 +4,7 @@ const path = require('path')
 const argv = require('minimist')(process.argv.slice(2))
 const net = require('net')
 const config = require('../lib/config')()
-const {Instruction, Answer} = require('../lib/proto')
+const {Instruction, Answer} = require('../protocol')
 const {datResolve} = require('../lib/dat')
 const help = require('../lib/help')
 
