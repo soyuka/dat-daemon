@@ -33,6 +33,10 @@ lil-pids ./services
 
 ## CLI
 
+/!\ This is a very basic command line utility to interact with the daemon. It's not meant to replace [dat](http://github.com/datproject/dat) CLI but is only a way to interact with the daemon through TCP.
+
+The daemon isn't calling `importFiles` (yet?) and if you want a writable dat, it must have been created with `dat` before being added to the daemon.
+
 ```
 Usage: datdaemon [action] [key] [directory]
 
