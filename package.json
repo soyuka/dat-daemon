@@ -2,7 +2,7 @@
   "name": "dat-daemon",
   "version": "1.0.8",
   "description": "Dat daemon",
-  "main": "cli/daemon.js",
+  "main": "index.js",
   "directories": {
     "bin": "bin",
     "lib": "lib",
