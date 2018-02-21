@@ -35,7 +35,10 @@ async function getMessage () {
     }
   }
 
-  return Instruction.encode({action, key, directory})
+  delete argv._
+  const options = argv
+
+  return Instruction.encode({action, key, directory, options})
 }
 
 async function start () {

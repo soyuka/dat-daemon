@@ -85,7 +85,7 @@ The configuration directory can be overwritten with the env variable `DATDAEMON_
 You can build your own tcp client to communicate with the daemon, the included command line tool is only an example.
 The client should:
 
-- use the local socket
+- use the local socket (no point in using this software not locally yet?)
 - send protobuf Instruction buffers
 - receive protobuf Answer
 

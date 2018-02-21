@@ -27,7 +27,7 @@ async function updateState () {
   for (let i = 0; i < list.length; i++) {
     const item = list[i]
     if (!state.has(item.key)) {
-      state.set(item.key, await Dat.create(item.key, item.directory))
+      state.set(item.key, await Dat.create(item.key, item.directory, item.options))
     }
   }
 }
@@ -48,7 +48,7 @@ async function onmessage (message) {
         return Answer.encode({message: `${message.key} exists already.`, failure: true})
       }
 
-      await database.put({key: message.key, directory: message.directory || `${config.data}/${message.key}`})
+      await database.put({key: message.key, directory: message.directory || `${config.data}/${message.key}`, options: message.options})
       await updateState()
       joinNetworks()
       log(`Added ${message.key}.`)
