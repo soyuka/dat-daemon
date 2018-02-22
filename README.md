@@ -34,6 +34,12 @@ Or [lil-pids](https://github.com/mafintosh/lil-pids):
 lil-pids ./services
 ```
 
+Where services contains:
+
+```
+datdaemond
+```
+
 ## CLI
 
 /!\ This is a very basic command line utility to interact with the daemon. It's not meant to replace [dat](http://github.com/datproject/dat) CLI but is only a way to interact with the daemon through TCP.
