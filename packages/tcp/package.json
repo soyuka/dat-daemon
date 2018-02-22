@@ -30,7 +30,6 @@
     "prettier-bytes": "^1.0.4"
   },
   "devDependencies": {
-    "rimraf": "^2.6.2",
     "standard": "^10.0.3",
     "tape": "^4.8.0"
   }

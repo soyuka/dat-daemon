@@ -3,7 +3,7 @@
 		"lerna": "^2.9.0"
 	},
   "scripts": {
-    "postinstal": "lerna bootstrap",
+    "postinstall": "lerna bootstrap",
     "test": "lerna run test"
   }
 }
