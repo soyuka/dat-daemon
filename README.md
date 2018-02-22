@@ -102,10 +102,40 @@ The configuration directory can be overwritten with the env variable `DATDAEMON_
 You can build your own tcp client to communicate with the daemon, the included command line tool is only an example.
 The client should:
 
-- use the local socket
 - send protobuf Instruction buffers
 - receive protobuf Answer
 
-See [daemon.proto](https://github.com/soyuka/dat-daemon/blob/master/daemon.proto) file.
+See [daemon.proto](https://github.com/soyuka/dat-daemon/blob/master/packages/protocol/daemon.proto) file.
 
 When the Client tries to add an existing key, it should exit the program with a code 2.
+
+### Example
+
+Here is an example client that connects to the `dat-daemon-ws` and executes an ADD instruction (assuming the port is 8477):
+
+```javascript
+var {Instruction, Answer} = require('dat-daemon-protocol')
+var socket = new WebSocket('ws://localhost:8477')
+
+socket.on('message', function (message) {
+  message = Answer.decode(message)
+  if (message.failure) {
+    console.error(message.message)
+    process.exit(message.failure)
+  }
+
+  console.log(message.message)
+  process.exit(0)
+})
+
+socket.on('open', async function () {
+  socket.send(Instruction.encode({
+    action: Instruction.Action.ADD,
+    key: 'somedatkey',
+    directory: 'dir',
+    options: {importFiles: true}
+  }))
+})
+```
+
+You can also check simple CLI examples [on WebSockets](https://github.com/soyuka/dat-daemon/blob/master/packages/ws/cli.js) or [on tcp](https://github.com/soyuka/dat-daemon/blob/master/packages/tcp/bin/cli.js)

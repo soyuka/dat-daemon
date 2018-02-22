@@ -4,7 +4,7 @@
   "description": "Dat daemon protocol buffer",
   "main": "index.js",
   "scripts": {
-    "build": "protocol-buffers daemon.proto -o index.js; cat daemon.proto >> README.md"
+    "build": "protocol-buffers daemon.proto -o index.js; echo '```' > README.md && cat daemon.proto >> README.md && echo '```' >> README.md"
   },
   "repository": {
     "type": "git",
