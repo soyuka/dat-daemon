@@ -1,22 +1,19 @@
 {
-  "name": "dat-daemon-ws",
+  "name": "dat-daemon-protocol",
   "version": "1.0.0",
-  "description": "Dat daemon on Websockets",
+  "description": "Dat daemon protocol buffer",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "protocol-buffers daemon.proto -o index.js",
+    "prepublish": "cat daemon.proto >> README.md"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/soyuka/dat-daemon.git"
   },
-  "bin": {
-    "datdaemond": "./bin.js"
-  },
   "keywords": [
     "dat",
-    "daemon",
-    "ws"
+    "daemon"
   ],
   "author": "soyuka",
   "license": "MIT",
@@ -25,7 +22,9 @@
   },
   "homepage": "https://github.com/soyuka/dat-daemon#readme",
   "dependencies": {
-    "dat-daemon": "^1.0.7",
-    "uws": "^9.14.0"
+    "protocol-buffers-encodings": "^1.1.0"
+  },
+  "devDependencies": {
+    "protocol-buffers": "^4.0.4"
   }
 }

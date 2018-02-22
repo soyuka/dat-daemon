@@ -1,1 +1,1 @@
-node ./bin/daemon.js
+node ./packages/datdaemon/bin/daemon.js

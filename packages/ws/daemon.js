@@ -18,7 +18,7 @@ function onconnection (socket) {
   socket.on('message', onsocketmessage)
 
   async function onsocketmessage (msg) {
-    socket.send(await onmessage(msg))
+    socket.send(await onmessage(Buffer.from(msg)))
   }
 }
 

@@ -1,4 +1,4 @@
 .dat
-test/fixtures/datdaemon
-test/fixtures/dat/.dat
+packages/tcp/test/fixtures/datdaemon
+packages/tcp/test/fixtures/dat/.dat
 node_modules

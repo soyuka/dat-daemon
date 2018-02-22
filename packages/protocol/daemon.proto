@@ -1,3 +1,7 @@
+/**
+ * Protocol buffers (https://github.com/mafintosh/protocol-buffers) for dat-daemon
+ * Instruction to give to the daemon
+ */
 message Instruction {
   enum Action {
     ADD = 0;
@@ -13,6 +17,18 @@ message Instruction {
   optional string directory = 3;
 }
 
+/**
+ * Answer given after processing an Instruction
+ */
+message Answer {
+  required string message = 1;
+  optional Statistics statistics = 2;
+  optional bool failure = 3 [default = 0];
+}
+
+/**
+ * When the Instruction was Statistics, you'll get this
+ */
 message Statistics {
   required int64 files = 1;
   required int64 connected = 2;
@@ -24,12 +40,9 @@ message Statistics {
   required float completePeers = 8;
 }
 
-message Answer {
-  required string message = 1;
-  optional Statistics statistics = 2;
-  optional bool failure = 3 [default = 0];
-}
-
+/**
+ * Internal storage of the List in leveldb
+ */
 message Dat {
   required string key = 1;
   required string directory = 2;
