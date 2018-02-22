@@ -1,6 +1,6 @@
 {
   "name": "dat-daemon",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Dat daemon",
   "main": "index.js",
   "directories": {
@@ -21,7 +21,7 @@
   "author": "soyuka",
   "license": "MIT",
   "dependencies": {
-    "dat-daemon-protocol": "^1.1.1",
+    "dat-daemon-protocol": "^1.1.2",
     "dat-link-resolve": "^2.1.0",
     "dat-node": "^3.5.8",
     "level": "^2.1.2",
