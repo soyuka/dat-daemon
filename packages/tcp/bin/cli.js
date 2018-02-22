@@ -18,7 +18,7 @@ async function start () {
       message = Answer.decode(message)
       if (message.failure) {
         console.error(message.message)
-        process.exit(1)
+        process.exit(message.failure)
       }
 
       console.log(message.message)

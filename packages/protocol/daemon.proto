@@ -36,7 +36,7 @@ message Options {
 message Answer {
   required string message = 1;
   optional Statistics statistics = 2;
-  optional bool failure = 3 [default = 0];
+  optional int32 failure = 3 [default = 0];
 }
 
 /**

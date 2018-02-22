@@ -4,7 +4,7 @@ const config = require('./lib/config')()
 const {Instruction, Answer} = require('dat-daemon-protocol')
 const database = require('./lib/database')
 const Dat = require('./lib/dat')
-const KEY_REQUIRED_ANSWER = Answer.encode({message: 'Key required.', failure: true})
+const KEY_REQUIRED_ANSWER = Answer.encode({message: 'Key required.', failure: 1})
 const state = new Map()
 
 /**
@@ -17,7 +17,7 @@ function log (...data) {
 function found (key) {
   if (!key) return
   if (state.has(key)) return true
-  return Answer.encode({message: `${key} not found.`, failure: true})
+  return Answer.encode({message: `${key} not found.`, failure: 1})
 }
 
 async function updateState () {
@@ -43,11 +43,11 @@ async function onmessage (message) {
   switch (message.action) {
     case Instruction.Action.ADD:
       if (!message.key || !message.directory) {
-        return Answer.encode({message: 'Key and directory are required.', failure: true})
+        return Answer.encode({message: 'Key and directory are required.', failure: 1})
       }
 
       if (exists === true) {
-        return Answer.encode({message: `${message.key} exists already.`, failure: true})
+        return Answer.encode({message: `${message.key} exists already.`, failure: 2})
       }
 
       await database.put({key: message.key, directory: message.directory || `${config.data}/${message.key}`, options: message.options})
@@ -113,7 +113,7 @@ ${pretty(stats.network.uploadSpeed)} Upload ${pretty(stats.network.downloadSpeed
 
       return Answer.encode({message: str, statistics})
     default:
-      return Answer.encode({message: `Unsupported action, actions are one of: ${Object.keys(Instruction.Action)}`, failure: true})
+      return Answer.encode({message: `Unsupported action, actions are one of: ${Object.keys(Instruction.Action)}`, failure: 1})
   }
 }
 

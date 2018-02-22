@@ -213,6 +213,10 @@ function defineOptions () {
       var len = enc[0].encodingLength(obj.tcp)
       length += 1 + len
     }
+    if (defined(obj.importFiles)) {
+      var len = enc[0].encodingLength(obj.importFiles)
+      length += 1 + len
+    }
     return length
   }
 
@@ -250,6 +254,11 @@ function defineOptions () {
       enc[0].encode(obj.tcp, buf, offset)
       offset += enc[0].encode.bytes
     }
+    if (defined(obj.importFiles)) {
+      buf[offset++] = 56
+      enc[0].encode(obj.importFiles, buf, offset)
+      offset += enc[0].encode.bytes
+    }
     encode.bytes = offset - oldOffset
     return buf
   }
@@ -265,7 +274,8 @@ function defineOptions () {
       download: true,
       port: 0,
       utp: true,
-      tcp: true
+      tcp: true,
+      importFiles: false
     }
     while (true) {
       if (end <= offset) {
@@ -300,6 +310,10 @@ function defineOptions () {
         obj.tcp = enc[0].decode(buf, offset)
         offset += enc[0].decode.bytes
         break
+        case 7:
+        obj.importFiles = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        break
         default:
         offset = skip(prefix & 7, buf, offset)
       }
@@ -311,7 +325,7 @@ function defineAnswer () {
   var enc = [
     encodings.string,
     Statistics,
-    encodings.bool
+    encodings.int32
   ]
 
   Answer.encodingLength = encodingLength
@@ -367,7 +381,7 @@ function defineAnswer () {
     var obj = {
       message: "",
       statistics: null,
-      failure: false
+      failure: 0
     }
     var found0 = false
     while (true) {

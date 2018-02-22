@@ -107,3 +107,5 @@ The client should:
 - receive protobuf Answer
 
 See [daemon.proto](https://github.com/soyuka/dat-daemon/blob/master/daemon.proto) file.
+
+When the Client tries to add an existing key, it should exit the program with a code 2.
