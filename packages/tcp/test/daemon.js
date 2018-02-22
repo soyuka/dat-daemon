@@ -19,54 +19,60 @@ tape('daemon', async function (t) {
   t.same(await test({action: Instruction.Action.ADD}), {
     message: 'Key and directory are required.',
     statistics: null,
-    failure: true
+    failure: 1
   })
 
   t.same(await test({action: Instruction.Action.ADD, directory: DAT_DIR}), {
     message: 'Key and directory are required.',
     statistics: null,
-    failure: true
+    failure: 1
   })
 
   t.same(await test({action: Instruction.Action.ADD, directory: DAT_DIR, key: key}), {
     message: `${key} added.`,
     statistics: null,
-    failure: false
+    failure: 0
+  })
+
+  t.same(await test({action: Instruction.Action.ADD, directory: DAT_DIR, key: key}), {
+    message: `${key} exists already.`,
+    statistics: null,
+    failure: 2
   })
 
   t.same(await test({action: Instruction.Action.PAUSE, key: key}), {
     message: `${key} paused.`,
     statistics: null,
-    failure: false
+    failure: 0
   })
 
   t.same(await test({action: Instruction.Action.START, key: key}), {
     message: `${key} started.`,
     statistics: null,
-    failure: false
+    failure: 0
   })
 
   t.same(await test({action: Instruction.Action.LIST}), {
     message: `${key} ${DAT_DIR}`,
     statistics: null,
-    failure: false
+    failure: 0
   })
 
   const b = await test({action: Instruction.Action.STATISTICS, key: key})
-  t.same(b.failure, false)
+  t.same(b.failure, 0)
   t.same(Object.keys(b.statistics), ['files', 'connected', 'byteLength', 'version', 'downloadSpeed', 'uploadSpeed', 'totalPeers', 'completePeers'])
 
   t.same(await test({action: Instruction.Action.REMOVE, key: key}), {
     message: `${key} removed.`,
     statistics: null,
-    failure: false
+    failure: 0
   })
 
   for (let i = 0; i < ACTION_REQUIRE_KEY.length; i++) {
     t.same({
       message: `${key} not found.`,
       statistics: null,
-      failure: true
+      failure: 1
     },
     await test({action: ACTION_REQUIRE_KEY[i], key: key}))
   }
@@ -79,7 +85,7 @@ tape('daemon key required', async function (t) {
     t.same({
       message: `Key required.`,
       statistics: null,
-      failure: true
+      failure: 1
     },
     await test({action: ACTION_REQUIRE_KEY[i]}))
   }
