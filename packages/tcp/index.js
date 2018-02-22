@@ -47,6 +47,7 @@ async function onmessage (message) {
       }
 
       if (exists === true) {
+        log(`${message.key} exists`)
         return Answer.encode({message: `${message.key} exists already.`, failure: 2})
       }
 
