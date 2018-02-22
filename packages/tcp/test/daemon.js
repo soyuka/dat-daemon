@@ -3,7 +3,7 @@ require('rimraf').sync(process.env.DATDAEMON_CONFIG)
 const tape = require('tape')
 const {create} = require('../lib/dat.js')
 const {onmessage} = require('..')
-const {Instruction, Answer} = require('../lib/proto')
+const {Instruction, Answer} = require('dat-daemon-protocol')
 const DAT_DIR = `${__dirname}/fixtures/dat`
 const ACTION_REQUIRE_KEY = [Instruction.Action.REMOVE, Instruction.Action.START, Instruction.Action.PAUSE, Instruction.Action.STATISTICS]
 

@@ -1,7 +1,7 @@
 const pretty = require('prettier-bytes')
 const eol = require('os').EOL
 const config = require('./lib/config')()
-const {Instruction, Answer} = require('./lib/proto')
+const {Instruction, Answer} = require('dat-daemon-protocol')
 const database = require('./lib/database')
 const Dat = require('./lib/dat')
 const KEY_REQUIRED_ANSWER = Answer.encode({message: 'Key required.', failure: true})
@@ -138,3 +138,6 @@ function joinNetworks () {
 }
 
 module.exports.joinNetworks = joinNetworks
+module.exports.config = require('./lib/config')
+module.exports.getMessage = require('./lib/arguments')
+module.exports.help = require('./lib/help')

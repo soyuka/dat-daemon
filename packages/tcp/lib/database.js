@@ -1,20 +1,28 @@
 const level = require('level')
 const config = require('./config')()
-const db = level(config.database)
-const {List} = require('../lib/proto')
+const {List} = require('dat-daemon-protocol')
 
 const KEY = 'list'
+let db
+
+function getDb () {
+  if (!db) {
+    db = level(config.database)
+  }
+
+  return db
+}
 
 async function put (item) {
   const list = await get()
   list.list.push(item)
 
-  return db.put(KEY, list, {valueEncoding: List})
+  return getDb().put(KEY, list, {valueEncoding: List})
 }
 
 async function get () {
   return new Promise(function (resolve, reject) {
-    db.get(KEY, {valueEncoding: List}, function (err, list) {
+    getDb().get(KEY, {valueEncoding: List}, function (err, list) {
       if (err) {
         if (err.notFound) {
           resolve({list: []})
@@ -43,7 +51,7 @@ async function remove (key) {
 
   list.list.splice(index, 1)
 
-  return db.put(KEY, list, {valueEncoding: List})
+  return getDb().put(KEY, list, {valueEncoding: List})
 }
 
 module.exports = {put, get, remove}

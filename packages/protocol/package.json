@@ -1,0 +1,30 @@
+{
+  "name": "dat-daemon-protocol",
+  "version": "1.1.0",
+  "description": "Dat daemon protocol buffer",
+  "main": "index.js",
+  "scripts": {
+    "build": "protocol-buffers daemon.proto -o index.js",
+    "prepublish": "cat daemon.proto >> README.md"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soyuka/dat-daemon.git"
+  },
+  "keywords": [
+    "dat",
+    "daemon"
+  ],
+  "author": "soyuka",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/soyuka/dat-daemon/issues"
+  },
+  "homepage": "https://github.com/soyuka/dat-daemon#readme",
+  "dependencies": {
+    "protocol-buffers-encodings": "^1.1.0"
+  },
+  "devDependencies": {
+    "protocol-buffers": "^4.0.4"
+  }
+}

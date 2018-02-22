@@ -1,4 +1,4 @@
-const {Instruction} = require('../lib/proto')
+const {Instruction} = require('dat-daemon-protocol')
 
 module.exports = help
 

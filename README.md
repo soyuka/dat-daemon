@@ -15,6 +15,9 @@ Let's say you have some spare bandwith and you want to help the dat community sh
 
 ```
 npm install -g dat-daemon
+# or if you want websockets instead of tcp:
+npm install -g dat-daemon-ws
+
 datdaemond &
 datdaemon add dat://peer-to-peer-web.com/ peer-to-peer-web
 ```
@@ -71,6 +74,8 @@ Configuration location: `~/.config/dat-daemon/config.json`:
 ```json
 {
   "data": "~/.config/dat-daemon",
+  "port": 8477, // used for http or websockets
+  "http": false, // Experimental http layer instead of tcp
   "database": "database", // name of the level database
   "socket": "datdaemon.sock" // name of the socket
 }

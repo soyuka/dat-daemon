@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const net = require('net')
+const http = require('http')
 const fs = require('fs')
 const {Transform} = require('stream')
 const config = require('../lib/config')()
@@ -13,17 +14,25 @@ async function daemon () {
   await updateState()
   joinNetworks()
 
+  if (config.http) {
+    server = http.createServer(onconnection)
+    server.listen(config.port)
+    return
+  }
+
   server = net.createServer(onconnection)
   server.listen(config.socket)
 }
 
 function unlink () {
+  if (config.http) return
+
   try {
     fs.unlinkSync(config.socket)
   } catch (e) {}
 }
 
-function onconnection (socket) {
+function onconnection (socket, res) {
   socket.pipe(
     new Transform({
       async transform (chunk, enc, cb) {
@@ -35,7 +44,7 @@ function onconnection (socket) {
         }
       }
     })
-  ).pipe(socket)
+  ).pipe(res || socket)
 }
 
 function onexit () {
