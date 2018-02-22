@@ -4,9 +4,17 @@ module.exports = help
 
 function help () {
   console.log(`
-Usage: datdaemon [action] [key] [directory]
+Usage: datdaemon [action] [key] [directory] [options]
 
 Where "action" one of: ${Object.keys(Instruction.Action).map(e => e.toLowerCase()).join(', ')}
+With dat "options":
+--sparse (false)
+--upload (true)
+--download (true)
+--port=1234
+--utp (true)
+--tcp (true)
+--importFiles (false)
 
 The "key" is a dat resolvable key.
 

@@ -22,7 +22,7 @@ tape('database', async function (t) {
   await put({key: 'foo', directory: 'bar'})
 
   list = await get()
-  t.same(list, {list: [{key: 'foo', directory: 'bar'}]})
+  t.same(list, {list: [{key: 'foo', directory: 'bar', options: null}]})
   t.same(await remove('bar'), false)
   await remove('foo')
 

@@ -27,7 +27,9 @@ async function updateState () {
   for (let i = 0; i < list.length; i++) {
     const item = list[i]
     if (!state.has(item.key)) {
-      state.set(item.key, await Dat.create(item.key, item.directory))
+      const dat = await Dat.create(item.key, item.directory, item.options)
+      dat._daemonOptions = item.options
+      state.set(item.key, dat)
     }
   }
 }
@@ -48,7 +50,7 @@ async function onmessage (message) {
         return Answer.encode({message: `${message.key} exists already.`, failure: true})
       }
 
-      await database.put({key: message.key, directory: message.directory || `${config.data}/${message.key}`})
+      await database.put({key: message.key, directory: message.directory || `${config.data}/${message.key}`, options: message.options})
       await updateState()
       joinNetworks()
       log(`Added ${message.key}.`)
@@ -127,6 +129,11 @@ module.exports.close = close
 
 function joinNetworks () {
   for (let dat of state.values()) {
+    if (dat._daemonOptions && dat._daemonOptions.importFiles && !dat._daemonOptions.didImportFiles) {
+      dat.importFiles()
+      dat._daemonOptions.didImportFiles = true
+    }
+
     if (!dat.network) {
       dat.joinNetwork()
     }

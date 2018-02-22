@@ -9,7 +9,8 @@
     "url": "git+https://github.com/soyuka/dat-daemon.git"
   },
   "bin": {
-    "datdaemond": "./bin.js"
+    "datdaemond": "./bin.js",
+    "datdaemon": "./cli.js"
   },
   "keywords": [
     "dat",
