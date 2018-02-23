@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-const WebSocketServer = require('uws').Server
+const WebSocket = require('websocket-stream')
+const {Transform} = require('stream')
 const {onmessage, joinNetworks, close, updateState, config} = require('dat-daemon')
 const configuration = config()
 var server
@@ -10,16 +11,20 @@ async function daemon () {
   await updateState()
   joinNetworks()
 
-  server = new WebSocketServer({ port: configuration.port })
-  server.on('connection', onconnection)
-}
-
-function onconnection (socket) {
-  socket.on('message', onsocketmessage)
-
-  async function onsocketmessage (msg) {
-    socket.send(await onmessage(Buffer.from(msg)))
-  }
+  server = WebSocket.createServer({ port: configuration.port, perMessageDeflate: false }, function (socket) {
+    socket.pipe(
+      new Transform({
+        async transform (chunk, enc, cb) {
+          try {
+            this.push(await onmessage(chunk))
+            cb()
+          } catch (err) {
+            cb(err)
+          }
+        }
+      })
+    ).pipe(socket)
+  })
 }
 
 function onexit () {
