@@ -27,7 +27,7 @@ async function updateState () {
   for (let i = 0; i < list.length; i++) {
     const item = list[i]
     if (!state.has(item.key)) {
-      const dat = await Dat.create(item.key, item.directory, item.options)
+      const dat = await Dat.create(item.key, item.path, item.options)
       dat._daemonOptions = item.options
       state.set(item.key, dat)
     }
@@ -42,7 +42,7 @@ async function onmessage (message) {
 
   switch (message.action) {
     case Instruction.Action.ADD:
-      if (!message.key || !message.directory) {
+      if (!message.key || !message.path) {
         return Answer.encode({message: 'Key and directory are required.', failure: 1})
       }
 
@@ -51,7 +51,7 @@ async function onmessage (message) {
         return Answer.encode({message: `${message.key} exists already.`, failure: 2})
       }
 
-      await database.put({key: message.key, directory: message.directory || `${config.data}/${message.key}`, options: message.options})
+      await database.put({key: message.key, path: message.path || `${config.data}/${message.key}`, options: message.options})
       await updateState()
       joinNetworks()
       log(`Added ${message.key}.`)
@@ -87,7 +87,7 @@ async function onmessage (message) {
       var list = await database.get()
 
       return Answer.encode({message: list.list.map(function (item) {
-        return `${item.key} ${item.directory}`
+        return `${item.key} ${item.path}`
       }).join(eol)})
 
     case Instruction.Action.STATISTICS:

@@ -4,7 +4,7 @@ module.exports = help
 
 function help () {
   console.log(`
-Usage: datdaemon [action] [key] [directory] [options]
+Usage: datdaemon [action] [key] [path] [options]
 
 Where "action" one of: ${Object.keys(Instruction.Action).map(e => e.toLowerCase()).join(', ')}
 With dat "options":
@@ -18,7 +18,7 @@ With dat "options":
 
 The "key" is a dat resolvable key.
 
-The "directory" is the location of the given dat. If not provided it'll default to the "key".
+The "path" is the location of the given dat. If not provided it'll default to the "key".
 
 Examples:
 

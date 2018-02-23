@@ -45,7 +45,7 @@ datdaemond
 /!\ This is a very basic command line utility to interact with the daemon. It's not meant to replace [dat](http://github.com/datproject/dat) CLI but is only a way to interact with the daemon through TCP.
 
 ```
-Usage: datdaemon [action] [key] [directory] [options]
+Usage: datdaemon [action] [key] [path] [options]
 
 Where "action" one of: add, remove, start, pause, statistics, list
 With dat "options":
@@ -59,7 +59,7 @@ With dat "options":
 
 The "key" is a dat resolvable key.
 
-The "directory" is the location of the given dat. If not provided it'll default to the "key".
+The "path" is the location of the given dat. If not provided it'll default to the "key".
 
 Examples:
 
@@ -93,7 +93,7 @@ Configuration location: `~/.config/dat-daemon/config.json`:
 }
 ```
 
-Everything will be stored in `data`. If you don't specify a directory when adding a dat it'll be downloaded there too.
+Everything will be stored in `data`. If you don't specify a path when adding a dat it'll be downloaded there too.
 
 The configuration directory can be overwritten with the env variable `DATDAEMON_CONFIG`.
 
@@ -132,7 +132,7 @@ socket.on('open', async function () {
   socket.send(Instruction.encode({
     action: Instruction.Action.ADD,
     key: 'somedatkey',
-    directory: 'dir',
+    path: 'dir',
     options: {importFiles: true}
   }))
 })

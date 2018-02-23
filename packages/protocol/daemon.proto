@@ -14,7 +14,7 @@ message Instruction {
 
   required Action action = 1;
   optional string key = 2;
-  optional string directory = 3;
+  optional string path = 3;
   optional Options options = 4;
 }
 
@@ -27,6 +27,8 @@ message Options {
   optional bool utp = 5 [default = true];
   optional bool tcp = 6 [default = true];
   optional bool importFiles = 7 [default = false];
+  // @TODO use count in importFiles options
+  optional bool count = 8 [default = false];
   // Missing: watch, version, exit see https://github.com/soyuka/dat-daemon/pull/6
 }
 
@@ -58,7 +60,7 @@ message Statistics {
  */
 message Dat {
   required string key = 1;
-  required string directory = 2;
+  required string path = 2;
   optional Options options = 3;
 }
 

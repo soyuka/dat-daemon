@@ -35,7 +35,7 @@ async function getMessage (argv) {
     }
   }
 
-  return Instruction.encode({action, key, directory})
+  return Instruction.encode({action, key, path: directory})
 }
 
 module.exports = getMessage

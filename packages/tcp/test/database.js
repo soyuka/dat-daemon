@@ -10,19 +10,19 @@ tape('database', async function (t) {
   try {
     await put({key: 'foo'})
   } catch (e) {
-    t.same(e.message, 'directory is required')
+    t.same(e.message, 'path is required')
   }
 
   try {
-    await put({directory: 'foo'})
+    await put({path: 'foo'})
   } catch (e) {
     t.same(e.message, 'key is required')
   }
 
-  await put({key: 'foo', directory: 'bar'})
+  await put({key: 'foo', path: 'bar'})
 
   list = await get()
-  t.same(list, {list: [{key: 'foo', directory: 'bar', options: null}]})
+  t.same(list, {list: [{key: 'foo', path: 'bar', options: null}]})
   t.same(await remove('bar'), false)
   await remove('foo')
 

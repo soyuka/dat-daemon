@@ -22,19 +22,19 @@ tape('daemon', async function (t) {
     failure: 1
   })
 
-  t.same(await test({action: Instruction.Action.ADD, directory: DAT_DIR}), {
+  t.same(await test({action: Instruction.Action.ADD, path: DAT_DIR}), {
     message: 'Key and directory are required.',
     statistics: null,
     failure: 1
   })
 
-  t.same(await test({action: Instruction.Action.ADD, directory: DAT_DIR, key: key}), {
+  t.same(await test({action: Instruction.Action.ADD, path: DAT_DIR, key: key}), {
     message: `${key} added.`,
     statistics: null,
     failure: 0
   })
 
-  t.same(await test({action: Instruction.Action.ADD, directory: DAT_DIR, key: key}), {
+  t.same(await test({action: Instruction.Action.ADD, path: DAT_DIR, key: key}), {
     message: `${key} exists already.`,
     statistics: null,
     failure: 2

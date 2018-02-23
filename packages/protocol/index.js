@@ -88,8 +88,8 @@ function defineInstruction () {
       var len = enc[1].encodingLength(obj.key)
       length += 1 + len
     }
-    if (defined(obj.directory)) {
-      var len = enc[1].encodingLength(obj.directory)
+    if (defined(obj.path)) {
+      var len = enc[1].encodingLength(obj.path)
       length += 1 + len
     }
     if (defined(obj.options)) {
@@ -113,9 +113,9 @@ function defineInstruction () {
       enc[1].encode(obj.key, buf, offset)
       offset += enc[1].encode.bytes
     }
-    if (defined(obj.directory)) {
+    if (defined(obj.path)) {
       buf[offset++] = 26
-      enc[1].encode(obj.directory, buf, offset)
+      enc[1].encode(obj.path, buf, offset)
       offset += enc[1].encode.bytes
     }
     if (defined(obj.options)) {
@@ -137,7 +137,7 @@ function defineInstruction () {
     var obj = {
       action: 0,
       key: "",
-      directory: "",
+      path: "",
       options: null
     }
     var found0 = false
@@ -161,7 +161,7 @@ function defineInstruction () {
         offset += enc[1].decode.bytes
         break
         case 3:
-        obj.directory = enc[1].decode(buf, offset)
+        obj.path = enc[1].decode(buf, offset)
         offset += enc[1].decode.bytes
         break
         case 4:
@@ -217,6 +217,10 @@ function defineOptions () {
       var len = enc[0].encodingLength(obj.importFiles)
       length += 1 + len
     }
+    if (defined(obj.count)) {
+      var len = enc[0].encodingLength(obj.count)
+      length += 1 + len
+    }
     return length
   }
 
@@ -259,6 +263,11 @@ function defineOptions () {
       enc[0].encode(obj.importFiles, buf, offset)
       offset += enc[0].encode.bytes
     }
+    if (defined(obj.count)) {
+      buf[offset++] = 64
+      enc[0].encode(obj.count, buf, offset)
+      offset += enc[0].encode.bytes
+    }
     encode.bytes = offset - oldOffset
     return buf
   }
@@ -275,7 +284,8 @@ function defineOptions () {
       port: 0,
       utp: true,
       tcp: true,
-      importFiles: false
+      importFiles: false,
+      count: false
     }
     while (true) {
       if (end <= offset) {
@@ -312,6 +322,10 @@ function defineOptions () {
         break
         case 7:
         obj.importFiles = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        break
+        case 8:
+        obj.count = enc[0].decode(buf, offset)
         offset += enc[0].decode.bytes
         break
         default:
@@ -590,8 +604,8 @@ function defineDat () {
     if (!defined(obj.key)) throw new Error("key is required")
     var len = enc[0].encodingLength(obj.key)
     length += 1 + len
-    if (!defined(obj.directory)) throw new Error("directory is required")
-    var len = enc[0].encodingLength(obj.directory)
+    if (!defined(obj.path)) throw new Error("path is required")
+    var len = enc[0].encodingLength(obj.path)
     length += 1 + len
     if (defined(obj.options)) {
       var len = enc[1].encodingLength(obj.options)
@@ -609,9 +623,9 @@ function defineDat () {
     buf[offset++] = 10
     enc[0].encode(obj.key, buf, offset)
     offset += enc[0].encode.bytes
-    if (!defined(obj.directory)) throw new Error("directory is required")
+    if (!defined(obj.path)) throw new Error("path is required")
     buf[offset++] = 18
-    enc[0].encode(obj.directory, buf, offset)
+    enc[0].encode(obj.path, buf, offset)
     offset += enc[0].encode.bytes
     if (defined(obj.options)) {
       buf[offset++] = 26
@@ -631,7 +645,7 @@ function defineDat () {
     var oldOffset = offset
     var obj = {
       key: "",
-      directory: "",
+      path: "",
       options: null
     }
     var found0 = false
@@ -652,7 +666,7 @@ function defineDat () {
         found0 = true
         break
         case 2:
-        obj.directory = enc[0].decode(buf, offset)
+        obj.path = enc[0].decode(buf, offset)
         offset += enc[0].decode.bytes
         found1 = true
         break
