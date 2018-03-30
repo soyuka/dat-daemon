@@ -26,6 +26,7 @@
   "dependencies": {
     "dat-daemon": "^2.0.0",
     "dat-daemon-protocol": "^2.0.0",
+    "find-my-way": "^1.11.1",
     "minimist": "^1.2.0",
     "websocket-stream": "^5.1.1"
   }

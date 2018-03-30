@@ -40,6 +40,7 @@ message Answer {
   required string message = 1;
   optional Statistics statistics = 2;
   optional int32 failure = 3 [default = 0];
+  optional List list = 4;
 }
 
 /**

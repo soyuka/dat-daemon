@@ -14,6 +14,8 @@ function log (...data) {
   console.error.apply(this, data)
 }
 
+module.exports.log = log
+
 function found (key) {
   if (!key) return
   if (state.has(key)) return true
@@ -23,6 +25,8 @@ function found (key) {
 async function updateState () {
   var list = await database.get()
   list = list.list
+
+  log('Updating state with now %s dat(s).', list.length)
 
   for (let i = 0; i < list.length; i++) {
     const item = list[i]
@@ -86,9 +90,12 @@ async function onmessage (message) {
     case Instruction.Action.LIST:
       var list = await database.get()
 
-      return Answer.encode({message: list.list.map(function (item) {
-        return `${item.key} ${item.path}`
-      }).join(eol)})
+      return Answer.encode({
+        message: list.list.map(function (item) {
+          return `${item.key} ${item.path}`
+        }).join(eol),
+        list: list
+      })
 
     case Instruction.Action.STATISTICS:
       if (exists === undefined) return KEY_REQUIRED_ANSWER
@@ -130,6 +137,8 @@ module.exports.close = close
 
 function joinNetworks () {
   for (let dat of state.values()) {
+    log('Joining network for %s', dat.key.toString('hex'))
+
     if (dat._daemonOptions && dat._daemonOptions.importFiles && !dat._daemonOptions.didImportFiles) {
       dat.importFiles()
       dat._daemonOptions.didImportFiles = true
@@ -146,6 +155,13 @@ function joinNetworks () {
 }
 
 module.exports.joinNetworks = joinNetworks
+
+function get (key) {
+  return state.get(key)
+}
+
+module.exports.get = get
+
 module.exports.config = require('./lib/config')
 module.exports.getMessage = require('./lib/arguments')
 module.exports.help = require('./lib/help')

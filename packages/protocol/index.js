@@ -339,7 +339,8 @@ function defineAnswer () {
   var enc = [
     encodings.string,
     Statistics,
-    encodings.int32
+    encodings.int32,
+    List
   ]
 
   Answer.encodingLength = encodingLength
@@ -358,6 +359,11 @@ function defineAnswer () {
     }
     if (defined(obj.failure)) {
       var len = enc[2].encodingLength(obj.failure)
+      length += 1 + len
+    }
+    if (defined(obj.list)) {
+      var len = enc[3].encodingLength(obj.list)
+      length += varint.encodingLength(len)
       length += 1 + len
     }
     return length
@@ -383,6 +389,13 @@ function defineAnswer () {
       enc[2].encode(obj.failure, buf, offset)
       offset += enc[2].encode.bytes
     }
+    if (defined(obj.list)) {
+      buf[offset++] = 34
+      varint.encode(enc[3].encodingLength(obj.list), buf, offset)
+      offset += varint.encode.bytes
+      enc[3].encode(obj.list, buf, offset)
+      offset += enc[3].encode.bytes
+    }
     encode.bytes = offset - oldOffset
     return buf
   }
@@ -395,7 +408,8 @@ function defineAnswer () {
     var obj = {
       message: "",
       statistics: null,
-      failure: 0
+      failure: 0,
+      list: null
     }
     var found0 = false
     while (true) {
@@ -422,6 +436,12 @@ function defineAnswer () {
         case 3:
         obj.failure = enc[2].decode(buf, offset)
         offset += enc[2].decode.bytes
+        break
+        case 4:
+        var len = varint.decode(buf, offset)
+        offset += varint.decode.bytes
+        obj.list = enc[3].decode(buf, offset, offset + len)
+        offset += enc[3].decode.bytes
         break
         default:
         offset = skip(prefix & 7, buf, offset)
