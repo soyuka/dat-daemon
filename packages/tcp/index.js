@@ -1,5 +1,6 @@
 const pretty = require('prettier-bytes')
 const eol = require('os').EOL
+const { Writable } = require('stream')
 const config = require('./lib/config')()
 const {Instruction, Answer} = require('dat-daemon-protocol')
 const database = require('./lib/database')
@@ -119,6 +120,32 @@ ${pretty(stats.network.uploadSpeed)} Upload ${pretty(stats.network.downloadSpeed
 }
 
 module.exports.onmessage = onmessage
+
+function onrequest (url, socket) {
+  url = url.split('/')
+  url.shift()
+
+  const action = url.shift()
+  const key = url.shift()
+  const path = url.join('/')
+  const exists = found(key)
+
+  if (exists === undefined) return KEY_REQUIRED_ANSWER
+  if (exists !== true) return exists
+
+  switch (action) {
+    case 'read':
+      state.get(key).archive.createReadStream(path).pipe(socket)
+      break
+    case 'write':
+      socket.pipe(state.get(key).archive.createWriteStream(path))
+      break
+    default:
+      return Answer.encode({message: `Unsupported action, actions are one of: read, write`, failure: 1})
+  }
+}
+
+module.exports.onrequest = onrequest
 
 function close () {
   for (let value of state.values()) {

@@ -1,3 +1,7 @@
+Client sends: Instruction {action: READ_FILE, key: 'foo', path: ''}
+Server answers: Answer {action: READ_FILE} or a message in case of failure
+Client now sets file mode on (will read stream and pipe to file) and sends: Instruction {action: READ_FILE_START} ?
+
 /**
  * Protocol buffers (https://github.com/mafintosh/protocol-buffers) for dat-daemon
  * Instruction to give to the daemon
@@ -36,9 +40,17 @@ message Options {
  * Answer given after processing an Instruction
  */
 message Answer {
-  required string message = 1;
+  enum Action {
+    NIL = 0;
+    READ_FILE = 1;
+    READ_FILE_END = 2;
+    WRITE_FILE = 3;
+  }
+
+  optional string message = 1;
   optional Statistics statistics = 2;
   optional int32 failure = 3 [default = 0];
+  optional Action action = 4 [default = 0];
 }
 
 /**
