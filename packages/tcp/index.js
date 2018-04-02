@@ -43,20 +43,6 @@ async function onmessage (message) {
 
   switch (message.action) {
     case Instruction.Action.ADD:
-      if (!message.key || !message.path) {
-        return Answer.encode({message: 'Key and directory are required.', failure: 1})
-      }
-
-      if (exists === true) {
-        log(`${message.key} exists`)
-        return Answer.encode({message: `${message.key} exists already.`, failure: 2})
-      }
-
-      await database.put({key: message.key, path: message.path || `${config.data}/${message.key}`, options: message.options})
-      await updateState()
-      joinNetworks()
-      log(`Added ${message.key}.`)
-      return Answer.encode({message: `${message.key} added.`})
 
     case Instruction.Action.REMOVE:
       if (exists === undefined) return KEY_REQUIRED_ANSWER

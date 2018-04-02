@@ -10,32 +10,9 @@ var encodings = require('protocol-buffers-encodings')
 var varint = encodings.varint
 var skip = encodings.skip
 
-var Instruction = exports.Instruction = {
-  buffer: true,
-  encodingLength: null,
-  encode: null,
-  decode: null
-}
-
-var Options = exports.Options = {
-  buffer: true,
-  encodingLength: null,
-  encode: null,
-  decode: null
-}
-
-var Answer = exports.Answer = {
-  buffer: true,
-  encodingLength: null,
-  encode: null,
-  decode: null
-}
-
-var Statistics = exports.Statistics = {
-  buffer: true,
-  encodingLength: null,
-  encode: null,
-  decode: null
+exports.Subject = {
+  "LIST": 0,
+  "ITEM": 1
 }
 
 var Dat = exports.Dat = {
@@ -52,27 +29,199 @@ var List = exports.List = {
   decode: null
 }
 
-defineInstruction()
-defineOptions()
-defineAnswer()
-defineStatistics()
+var Instruction = exports.Instruction = {
+  buffer: true,
+  encodingLength: null,
+  encode: null,
+  decode: null
+}
+
+var Statistics = exports.Statistics = {
+  buffer: true,
+  encodingLength: null,
+  encode: null,
+  decode: null
+}
+
+var Answer = exports.Answer = {
+  buffer: true,
+  encodingLength: null,
+  encode: null,
+  decode: null
+}
+
 defineDat()
 defineList()
+defineInstruction()
+defineStatistics()
+defineAnswer()
+
+function defineDat () {
+  var enc = [
+    encodings.string
+  ]
+
+  Dat.encodingLength = encodingLength
+  Dat.encode = encode
+  Dat.decode = decode
+
+  function encodingLength (obj) {
+    var length = 0
+    if (!defined(obj.key)) throw new Error("key is required")
+    var len = enc[0].encodingLength(obj.key)
+    length += 1 + len
+    if (!defined(obj.path)) throw new Error("path is required")
+    var len = enc[0].encodingLength(obj.path)
+    length += 1 + len
+    return length
+  }
+
+  function encode (obj, buf, offset) {
+    if (!offset) offset = 0
+    if (!buf) buf = Buffer.allocUnsafe(encodingLength(obj))
+    var oldOffset = offset
+    if (!defined(obj.key)) throw new Error("key is required")
+    buf[offset++] = 10
+    enc[0].encode(obj.key, buf, offset)
+    offset += enc[0].encode.bytes
+    if (!defined(obj.path)) throw new Error("path is required")
+    buf[offset++] = 18
+    enc[0].encode(obj.path, buf, offset)
+    offset += enc[0].encode.bytes
+    encode.bytes = offset - oldOffset
+    return buf
+  }
+
+  function decode (buf, offset, end) {
+    if (!offset) offset = 0
+    if (!end) end = buf.length
+    if (!(end <= buf.length && offset <= buf.length)) throw new Error("Decoded message is not valid")
+    var oldOffset = offset
+    var obj = {
+      key: "",
+      path: ""
+    }
+    var found0 = false
+    var found1 = false
+    while (true) {
+      if (end <= offset) {
+        if (!found0 || !found1) throw new Error("Decoded message is not valid")
+        decode.bytes = offset - oldOffset
+        return obj
+      }
+      var prefix = varint.decode(buf, offset)
+      offset += varint.decode.bytes
+      var tag = prefix >> 3
+      switch (tag) {
+        case 1:
+        obj.key = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        found0 = true
+        break
+        case 2:
+        obj.path = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        found1 = true
+        break
+        default:
+        offset = skip(prefix & 7, buf, offset)
+      }
+    }
+  }
+}
+
+function defineList () {
+  var enc = [
+    Dat
+  ]
+
+  List.encodingLength = encodingLength
+  List.encode = encode
+  List.decode = decode
+
+  function encodingLength (obj) {
+    var length = 0
+    if (defined(obj.list)) {
+      for (var i = 0; i < obj.list.length; i++) {
+        if (!defined(obj.list[i])) continue
+        var len = enc[0].encodingLength(obj.list[i])
+        length += varint.encodingLength(len)
+        length += 1 + len
+      }
+    }
+    return length
+  }
+
+  function encode (obj, buf, offset) {
+    if (!offset) offset = 0
+    if (!buf) buf = Buffer.allocUnsafe(encodingLength(obj))
+    var oldOffset = offset
+    if (defined(obj.list)) {
+      for (var i = 0; i < obj.list.length; i++) {
+        if (!defined(obj.list[i])) continue
+        buf[offset++] = 10
+        varint.encode(enc[0].encodingLength(obj.list[i]), buf, offset)
+        offset += varint.encode.bytes
+        enc[0].encode(obj.list[i], buf, offset)
+        offset += enc[0].encode.bytes
+      }
+    }
+    encode.bytes = offset - oldOffset
+    return buf
+  }
+
+  function decode (buf, offset, end) {
+    if (!offset) offset = 0
+    if (!end) end = buf.length
+    if (!(end <= buf.length && offset <= buf.length)) throw new Error("Decoded message is not valid")
+    var oldOffset = offset
+    var obj = {
+      list: []
+    }
+    while (true) {
+      if (end <= offset) {
+        decode.bytes = offset - oldOffset
+        return obj
+      }
+      var prefix = varint.decode(buf, offset)
+      offset += varint.decode.bytes
+      var tag = prefix >> 3
+      switch (tag) {
+        case 1:
+        var len = varint.decode(buf, offset)
+        offset += varint.decode.bytes
+        obj.list.push(enc[0].decode(buf, offset, offset + len))
+        offset += enc[0].decode.bytes
+        break
+        default:
+        offset = skip(prefix & 7, buf, offset)
+      }
+    }
+  }
+}
 
 function defineInstruction () {
   Instruction.Action = {
   "ADD": 0,
   "REMOVE": 1,
-  "START": 2,
-  "PAUSE": 3,
-  "STATISTICS": 4,
-  "LIST": 5
+  "GET": 3,
+  "START": 4,
+  "PAUSE": 5,
+  "LOAD": 6,
+  "WATCH": 7,
+  "MKDIR": 8,
+  "READDIR": 9,
+  "UNLINK": 10,
+  "INFO": 11,
+  "WRITE": 12,
+  "READ": 13
 }
 
   var enc = [
+    encodings.int32,
     encodings.enum,
-    encodings.string,
-    Options
+    encodings.enum,
+    encodings.string
   ]
 
   Instruction.encodingLength = encodingLength
@@ -81,20 +230,21 @@ function defineInstruction () {
 
   function encodingLength (obj) {
     var length = 0
+    if (!defined(obj.id)) throw new Error("id is required")
+    var len = enc[0].encodingLength(obj.id)
+    length += 1 + len
     if (!defined(obj.action)) throw new Error("action is required")
-    var len = enc[0].encodingLength(obj.action)
+    var len = enc[1].encodingLength(obj.action)
+    length += 1 + len
+    if (!defined(obj.subject)) throw new Error("subject is required")
+    var len = enc[2].encodingLength(obj.subject)
     length += 1 + len
     if (defined(obj.key)) {
-      var len = enc[1].encodingLength(obj.key)
+      var len = enc[3].encodingLength(obj.key)
       length += 1 + len
     }
     if (defined(obj.path)) {
-      var len = enc[1].encodingLength(obj.path)
-      length += 1 + len
-    }
-    if (defined(obj.options)) {
-      var len = enc[2].encodingLength(obj.options)
-      length += varint.encodingLength(len)
+      var len = enc[3].encodingLength(obj.path)
       length += 1 + len
     }
     return length
@@ -104,26 +254,27 @@ function defineInstruction () {
     if (!offset) offset = 0
     if (!buf) buf = Buffer.allocUnsafe(encodingLength(obj))
     var oldOffset = offset
-    if (!defined(obj.action)) throw new Error("action is required")
+    if (!defined(obj.id)) throw new Error("id is required")
     buf[offset++] = 8
-    enc[0].encode(obj.action, buf, offset)
+    enc[0].encode(obj.id, buf, offset)
     offset += enc[0].encode.bytes
+    if (!defined(obj.action)) throw new Error("action is required")
+    buf[offset++] = 16
+    enc[1].encode(obj.action, buf, offset)
+    offset += enc[1].encode.bytes
+    if (!defined(obj.subject)) throw new Error("subject is required")
+    buf[offset++] = 24
+    enc[2].encode(obj.subject, buf, offset)
+    offset += enc[2].encode.bytes
     if (defined(obj.key)) {
-      buf[offset++] = 18
-      enc[1].encode(obj.key, buf, offset)
-      offset += enc[1].encode.bytes
+      buf[offset++] = 34
+      enc[3].encode(obj.key, buf, offset)
+      offset += enc[3].encode.bytes
     }
     if (defined(obj.path)) {
-      buf[offset++] = 26
-      enc[1].encode(obj.path, buf, offset)
-      offset += enc[1].encode.bytes
-    }
-    if (defined(obj.options)) {
-      buf[offset++] = 34
-      varint.encode(enc[2].encodingLength(obj.options), buf, offset)
-      offset += varint.encode.bytes
-      enc[2].encode(obj.options, buf, offset)
-      offset += enc[2].encode.bytes
+      buf[offset++] = 42
+      enc[3].encode(obj.path, buf, offset)
+      offset += enc[3].encode.bytes
     }
     encode.bytes = offset - oldOffset
     return buf
@@ -135,15 +286,18 @@ function defineInstruction () {
     if (!(end <= buf.length && offset <= buf.length)) throw new Error("Decoded message is not valid")
     var oldOffset = offset
     var obj = {
+      id: 0,
       action: 0,
+      subject: 0,
       key: "",
-      path: "",
-      options: null
+      path: ""
     }
     var found0 = false
+    var found1 = false
+    var found2 = false
     while (true) {
       if (end <= offset) {
-        if (!found0) throw new Error("Decoded message is not valid")
+        if (!found0 || !found1 || !found2) throw new Error("Decoded message is not valid")
         decode.bytes = offset - oldOffset
         return obj
       }
@@ -152,276 +306,27 @@ function defineInstruction () {
       var tag = prefix >> 3
       switch (tag) {
         case 1:
-        obj.action = enc[0].decode(buf, offset)
+        obj.id = enc[0].decode(buf, offset)
         offset += enc[0].decode.bytes
         found0 = true
         break
         case 2:
-        obj.key = enc[1].decode(buf, offset)
+        obj.action = enc[1].decode(buf, offset)
         offset += enc[1].decode.bytes
+        found1 = true
         break
         case 3:
-        obj.path = enc[1].decode(buf, offset)
-        offset += enc[1].decode.bytes
-        break
-        case 4:
-        var len = varint.decode(buf, offset)
-        offset += varint.decode.bytes
-        obj.options = enc[2].decode(buf, offset, offset + len)
+        obj.subject = enc[2].decode(buf, offset)
         offset += enc[2].decode.bytes
-        break
-        default:
-        offset = skip(prefix & 7, buf, offset)
-      }
-    }
-  }
-}
-
-function defineOptions () {
-  var enc = [
-    encodings.bool,
-    encodings.int32
-  ]
-
-  Options.encodingLength = encodingLength
-  Options.encode = encode
-  Options.decode = decode
-
-  function encodingLength (obj) {
-    var length = 0
-    if (defined(obj.sparse)) {
-      var len = enc[0].encodingLength(obj.sparse)
-      length += 1 + len
-    }
-    if (defined(obj.upload)) {
-      var len = enc[0].encodingLength(obj.upload)
-      length += 1 + len
-    }
-    if (defined(obj.download)) {
-      var len = enc[0].encodingLength(obj.download)
-      length += 1 + len
-    }
-    if (defined(obj.port)) {
-      var len = enc[1].encodingLength(obj.port)
-      length += 1 + len
-    }
-    if (defined(obj.utp)) {
-      var len = enc[0].encodingLength(obj.utp)
-      length += 1 + len
-    }
-    if (defined(obj.tcp)) {
-      var len = enc[0].encodingLength(obj.tcp)
-      length += 1 + len
-    }
-    if (defined(obj.importFiles)) {
-      var len = enc[0].encodingLength(obj.importFiles)
-      length += 1 + len
-    }
-    if (defined(obj.count)) {
-      var len = enc[0].encodingLength(obj.count)
-      length += 1 + len
-    }
-    return length
-  }
-
-  function encode (obj, buf, offset) {
-    if (!offset) offset = 0
-    if (!buf) buf = Buffer.allocUnsafe(encodingLength(obj))
-    var oldOffset = offset
-    if (defined(obj.sparse)) {
-      buf[offset++] = 8
-      enc[0].encode(obj.sparse, buf, offset)
-      offset += enc[0].encode.bytes
-    }
-    if (defined(obj.upload)) {
-      buf[offset++] = 16
-      enc[0].encode(obj.upload, buf, offset)
-      offset += enc[0].encode.bytes
-    }
-    if (defined(obj.download)) {
-      buf[offset++] = 24
-      enc[0].encode(obj.download, buf, offset)
-      offset += enc[0].encode.bytes
-    }
-    if (defined(obj.port)) {
-      buf[offset++] = 32
-      enc[1].encode(obj.port, buf, offset)
-      offset += enc[1].encode.bytes
-    }
-    if (defined(obj.utp)) {
-      buf[offset++] = 40
-      enc[0].encode(obj.utp, buf, offset)
-      offset += enc[0].encode.bytes
-    }
-    if (defined(obj.tcp)) {
-      buf[offset++] = 48
-      enc[0].encode(obj.tcp, buf, offset)
-      offset += enc[0].encode.bytes
-    }
-    if (defined(obj.importFiles)) {
-      buf[offset++] = 56
-      enc[0].encode(obj.importFiles, buf, offset)
-      offset += enc[0].encode.bytes
-    }
-    if (defined(obj.count)) {
-      buf[offset++] = 64
-      enc[0].encode(obj.count, buf, offset)
-      offset += enc[0].encode.bytes
-    }
-    encode.bytes = offset - oldOffset
-    return buf
-  }
-
-  function decode (buf, offset, end) {
-    if (!offset) offset = 0
-    if (!end) end = buf.length
-    if (!(end <= buf.length && offset <= buf.length)) throw new Error("Decoded message is not valid")
-    var oldOffset = offset
-    var obj = {
-      sparse: false,
-      upload: true,
-      download: true,
-      port: 0,
-      utp: true,
-      tcp: true,
-      importFiles: false,
-      count: false
-    }
-    while (true) {
-      if (end <= offset) {
-        decode.bytes = offset - oldOffset
-        return obj
-      }
-      var prefix = varint.decode(buf, offset)
-      offset += varint.decode.bytes
-      var tag = prefix >> 3
-      switch (tag) {
-        case 1:
-        obj.sparse = enc[0].decode(buf, offset)
-        offset += enc[0].decode.bytes
-        break
-        case 2:
-        obj.upload = enc[0].decode(buf, offset)
-        offset += enc[0].decode.bytes
-        break
-        case 3:
-        obj.download = enc[0].decode(buf, offset)
-        offset += enc[0].decode.bytes
+        found2 = true
         break
         case 4:
-        obj.port = enc[1].decode(buf, offset)
-        offset += enc[1].decode.bytes
+        obj.key = enc[3].decode(buf, offset)
+        offset += enc[3].decode.bytes
         break
         case 5:
-        obj.utp = enc[0].decode(buf, offset)
-        offset += enc[0].decode.bytes
-        break
-        case 6:
-        obj.tcp = enc[0].decode(buf, offset)
-        offset += enc[0].decode.bytes
-        break
-        case 7:
-        obj.importFiles = enc[0].decode(buf, offset)
-        offset += enc[0].decode.bytes
-        break
-        case 8:
-        obj.count = enc[0].decode(buf, offset)
-        offset += enc[0].decode.bytes
-        break
-        default:
-        offset = skip(prefix & 7, buf, offset)
-      }
-    }
-  }
-}
-
-function defineAnswer () {
-  var enc = [
-    encodings.string,
-    Statistics,
-    encodings.int32
-  ]
-
-  Answer.encodingLength = encodingLength
-  Answer.encode = encode
-  Answer.decode = decode
-
-  function encodingLength (obj) {
-    var length = 0
-    if (!defined(obj.message)) throw new Error("message is required")
-    var len = enc[0].encodingLength(obj.message)
-    length += 1 + len
-    if (defined(obj.statistics)) {
-      var len = enc[1].encodingLength(obj.statistics)
-      length += varint.encodingLength(len)
-      length += 1 + len
-    }
-    if (defined(obj.failure)) {
-      var len = enc[2].encodingLength(obj.failure)
-      length += 1 + len
-    }
-    return length
-  }
-
-  function encode (obj, buf, offset) {
-    if (!offset) offset = 0
-    if (!buf) buf = Buffer.allocUnsafe(encodingLength(obj))
-    var oldOffset = offset
-    if (!defined(obj.message)) throw new Error("message is required")
-    buf[offset++] = 10
-    enc[0].encode(obj.message, buf, offset)
-    offset += enc[0].encode.bytes
-    if (defined(obj.statistics)) {
-      buf[offset++] = 18
-      varint.encode(enc[1].encodingLength(obj.statistics), buf, offset)
-      offset += varint.encode.bytes
-      enc[1].encode(obj.statistics, buf, offset)
-      offset += enc[1].encode.bytes
-    }
-    if (defined(obj.failure)) {
-      buf[offset++] = 24
-      enc[2].encode(obj.failure, buf, offset)
-      offset += enc[2].encode.bytes
-    }
-    encode.bytes = offset - oldOffset
-    return buf
-  }
-
-  function decode (buf, offset, end) {
-    if (!offset) offset = 0
-    if (!end) end = buf.length
-    if (!(end <= buf.length && offset <= buf.length)) throw new Error("Decoded message is not valid")
-    var oldOffset = offset
-    var obj = {
-      message: "",
-      statistics: null,
-      failure: 0
-    }
-    var found0 = false
-    while (true) {
-      if (end <= offset) {
-        if (!found0) throw new Error("Decoded message is not valid")
-        decode.bytes = offset - oldOffset
-        return obj
-      }
-      var prefix = varint.decode(buf, offset)
-      offset += varint.decode.bytes
-      var tag = prefix >> 3
-      switch (tag) {
-        case 1:
-        obj.message = enc[0].decode(buf, offset)
-        offset += enc[0].decode.bytes
-        found0 = true
-        break
-        case 2:
-        var len = varint.decode(buf, offset)
-        offset += varint.decode.bytes
-        obj.statistics = enc[1].decode(buf, offset, offset + len)
-        offset += enc[1].decode.bytes
-        break
-        case 3:
-        obj.failure = enc[2].decode(buf, offset)
-        offset += enc[2].decode.bytes
+        obj.path = enc[3].decode(buf, offset)
+        offset += enc[3].decode.bytes
         break
         default:
         offset = skip(prefix & 7, buf, offset)
@@ -589,115 +494,38 @@ function defineStatistics () {
   }
 }
 
-function defineDat () {
+function defineAnswer () {
   var enc = [
-    encodings.string,
-    Options
-  ]
-
-  Dat.encodingLength = encodingLength
-  Dat.encode = encode
-  Dat.decode = decode
-
-  function encodingLength (obj) {
-    var length = 0
-    if (!defined(obj.key)) throw new Error("key is required")
-    var len = enc[0].encodingLength(obj.key)
-    length += 1 + len
-    if (!defined(obj.path)) throw new Error("path is required")
-    var len = enc[0].encodingLength(obj.path)
-    length += 1 + len
-    if (defined(obj.options)) {
-      var len = enc[1].encodingLength(obj.options)
-      length += varint.encodingLength(len)
-      length += 1 + len
-    }
-    return length
-  }
-
-  function encode (obj, buf, offset) {
-    if (!offset) offset = 0
-    if (!buf) buf = Buffer.allocUnsafe(encodingLength(obj))
-    var oldOffset = offset
-    if (!defined(obj.key)) throw new Error("key is required")
-    buf[offset++] = 10
-    enc[0].encode(obj.key, buf, offset)
-    offset += enc[0].encode.bytes
-    if (!defined(obj.path)) throw new Error("path is required")
-    buf[offset++] = 18
-    enc[0].encode(obj.path, buf, offset)
-    offset += enc[0].encode.bytes
-    if (defined(obj.options)) {
-      buf[offset++] = 26
-      varint.encode(enc[1].encodingLength(obj.options), buf, offset)
-      offset += varint.encode.bytes
-      enc[1].encode(obj.options, buf, offset)
-      offset += enc[1].encode.bytes
-    }
-    encode.bytes = offset - oldOffset
-    return buf
-  }
-
-  function decode (buf, offset, end) {
-    if (!offset) offset = 0
-    if (!end) end = buf.length
-    if (!(end <= buf.length && offset <= buf.length)) throw new Error("Decoded message is not valid")
-    var oldOffset = offset
-    var obj = {
-      key: "",
-      path: "",
-      options: null
-    }
-    var found0 = false
-    var found1 = false
-    while (true) {
-      if (end <= offset) {
-        if (!found0 || !found1) throw new Error("Decoded message is not valid")
-        decode.bytes = offset - oldOffset
-        return obj
-      }
-      var prefix = varint.decode(buf, offset)
-      offset += varint.decode.bytes
-      var tag = prefix >> 3
-      switch (tag) {
-        case 1:
-        obj.key = enc[0].decode(buf, offset)
-        offset += enc[0].decode.bytes
-        found0 = true
-        break
-        case 2:
-        obj.path = enc[0].decode(buf, offset)
-        offset += enc[0].decode.bytes
-        found1 = true
-        break
-        case 3:
-        var len = varint.decode(buf, offset)
-        offset += varint.decode.bytes
-        obj.options = enc[1].decode(buf, offset, offset + len)
-        offset += enc[1].decode.bytes
-        break
-        default:
-        offset = skip(prefix & 7, buf, offset)
-      }
-    }
-  }
-}
-
-function defineList () {
-  var enc = [
+    encodings.int32,
+    encodings.enum,
+    Statistics,
     Dat
   ]
 
-  List.encodingLength = encodingLength
-  List.encode = encode
-  List.decode = decode
+  Answer.encodingLength = encodingLength
+  Answer.encode = encode
+  Answer.decode = decode
 
   function encodingLength (obj) {
     var length = 0
+    if (!defined(obj.id)) throw new Error("id is required")
+    var len = enc[0].encodingLength(obj.id)
+    length += 1 + len
+    if (!defined(obj.failure)) throw new Error("failure is required")
+    var len = enc[0].encodingLength(obj.failure)
+    length += 1 + len
+    if (!defined(obj.subject)) throw new Error("subject is required")
+    var len = enc[1].encodingLength(obj.subject)
+    length += 1 + len
+    if (defined(obj.statistics)) {
+      var len = enc[2].encodingLength(obj.statistics)
+      length += varint.encodingLength(len)
+      length += 1 + len
+    }
     if (defined(obj.list)) {
       for (var i = 0; i < obj.list.length; i++) {
         if (!defined(obj.list[i])) continue
-        var len = enc[0].encodingLength(obj.list[i])
+        var len = enc[3].encodingLength(obj.list[i])
         length += varint.encodingLength(len)
         length += 1 + len
       }
@@ -709,14 +537,33 @@ function defineList () {
     if (!offset) offset = 0
     if (!buf) buf = Buffer.allocUnsafe(encodingLength(obj))
     var oldOffset = offset
+    if (!defined(obj.id)) throw new Error("id is required")
+    buf[offset++] = 8
+    enc[0].encode(obj.id, buf, offset)
+    offset += enc[0].encode.bytes
+    if (!defined(obj.failure)) throw new Error("failure is required")
+    buf[offset++] = 16
+    enc[0].encode(obj.failure, buf, offset)
+    offset += enc[0].encode.bytes
+    if (!defined(obj.subject)) throw new Error("subject is required")
+    buf[offset++] = 24
+    enc[1].encode(obj.subject, buf, offset)
+    offset += enc[1].encode.bytes
+    if (defined(obj.statistics)) {
+      buf[offset++] = 34
+      varint.encode(enc[2].encodingLength(obj.statistics), buf, offset)
+      offset += varint.encode.bytes
+      enc[2].encode(obj.statistics, buf, offset)
+      offset += enc[2].encode.bytes
+    }
     if (defined(obj.list)) {
       for (var i = 0; i < obj.list.length; i++) {
         if (!defined(obj.list[i])) continue
-        buf[offset++] = 10
-        varint.encode(enc[0].encodingLength(obj.list[i]), buf, offset)
+        buf[offset++] = 42
+        varint.encode(enc[3].encodingLength(obj.list[i]), buf, offset)
         offset += varint.encode.bytes
-        enc[0].encode(obj.list[i], buf, offset)
-        offset += enc[0].encode.bytes
+        enc[3].encode(obj.list[i], buf, offset)
+        offset += enc[3].encode.bytes
       }
     }
     encode.bytes = offset - oldOffset
@@ -729,10 +576,18 @@ function defineList () {
     if (!(end <= buf.length && offset <= buf.length)) throw new Error("Decoded message is not valid")
     var oldOffset = offset
     var obj = {
+      id: 0,
+      failure: 0,
+      subject: 0,
+      statistics: null,
       list: []
     }
+    var found0 = false
+    var found1 = false
+    var found2 = false
     while (true) {
       if (end <= offset) {
+        if (!found0 || !found1 || !found2) throw new Error("Decoded message is not valid")
         decode.bytes = offset - oldOffset
         return obj
       }
@@ -741,10 +596,31 @@ function defineList () {
       var tag = prefix >> 3
       switch (tag) {
         case 1:
+        obj.id = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        found0 = true
+        break
+        case 2:
+        obj.failure = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        found1 = true
+        break
+        case 3:
+        obj.subject = enc[1].decode(buf, offset)
+        offset += enc[1].decode.bytes
+        found2 = true
+        break
+        case 4:
         var len = varint.decode(buf, offset)
         offset += varint.decode.bytes
-        obj.list.push(enc[0].decode(buf, offset, offset + len))
-        offset += enc[0].decode.bytes
+        obj.statistics = enc[2].decode(buf, offset, offset + len)
+        offset += enc[2].decode.bytes
+        break
+        case 5:
+        var len = varint.decode(buf, offset)
+        offset += varint.decode.bytes
+        obj.list.push(enc[3].decode(buf, offset, offset + len))
+        offset += enc[3].decode.bytes
         break
         default:
         offset = skip(prefix & 7, buf, offset)

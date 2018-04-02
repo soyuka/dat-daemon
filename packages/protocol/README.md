@@ -1,50 +1,45 @@
 ```
-/**
- * Protocol buffers (https://github.com/mafintosh/protocol-buffers) for dat-daemon
- * Instruction to give to the daemon
- */
+enum Subject {
+  LIST = 0;
+  ITEM = 1;
+}
+
+message Dat {
+  required string key = 1;
+  required string path = 2;
+}
+
+message List {
+  repeated Dat list = 1;
+}
+
 message Instruction {
   enum Action {
+    // List
     ADD = 0;
     REMOVE = 1;
-    START = 2;
-    PAUSE = 3;
-    STATISTICS = 4;
-    LIST = 5;
+    GET = 3;
+    // Item
+    START = 4;
+    PAUSE = 5;
+    LOAD = 6;
+    WATCH = 7;
+    MKDIR = 8;
+    READDIR = 9;
+    UNLINK = 10;
+    INFO = 11;
+    // FS
+    WRITE = 12;
+    READ = 13;
   }
 
-  required Action action = 1;
-  optional string key = 2;
-  optional string path = 3;
-  optional Options options = 4;
+  required int32 id = 1;
+  required Action action = 2;
+  required Subject subject = 3;
+  optional string key = 4;
+  optional string path = 5;
 }
 
-message Options {
-  optional bool sparse = 1 [default = false];
-  // Network options
-  optional bool upload = 2 [default = true];
-  optional bool download = 3 [default = true];
-  optional int32 port = 4;
-  optional bool utp = 5 [default = true];
-  optional bool tcp = 6 [default = true];
-  optional bool importFiles = 7 [default = false];
-  // @TODO use count in importFiles options
-  optional bool count = 8 [default = false];
-  // Missing: watch, version, exit see https://github.com/soyuka/dat-daemon/pull/6
-}
-
-/**
- * Answer given after processing an Instruction
- */
-message Answer {
-  required string message = 1;
-  optional Statistics statistics = 2;
-  optional int32 failure = 3 [default = 0];
-}
-
-/**
- * When the Instruction was Statistics, you'll get this
- */
 message Statistics {
   required int64 files = 1;
   required int64 connected = 2;
@@ -56,16 +51,11 @@ message Statistics {
   required float completePeers = 8;
 }
 
-/**
- * Internal storage of the List in leveldb
- */
-message Dat {
-  required string key = 1;
-  required string path = 2;
-  optional Options options = 3;
-}
-
-message List {
-  repeated Dat list = 1;
+message Answer {
+  required int32 id = 1;
+  required int32 failure = 2 [default = 0];
+  required Subject subject = 3;
+  optional Statistics statistics = 4;
+  repeated Dat list = 5;
 }
 ```
