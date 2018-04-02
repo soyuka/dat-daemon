@@ -1,0 +1,15 @@
+{
+  "name": "dat-daemon-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "soyuka",
+  "license": "MIT",
+  "dependencies": {
+    "dat-daemon-protocol": "^2.0.0"
+  }
+}
