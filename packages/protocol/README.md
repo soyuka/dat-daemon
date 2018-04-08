@@ -18,19 +18,20 @@ message Instruction {
     // List
     ADD = 0;
     REMOVE = 1;
-    GET = 3;
+    GET = 2;
     // Item
-    START = 4;
-    PAUSE = 5;
-    LOAD = 6;
-    WATCH = 7;
-    MKDIR = 8;
-    READDIR = 9;
-    UNLINK = 10;
+    START = 3;
+    PAUSE = 4;
+    LOAD = 5;
+    WATCH = 6;
+    MKDIR = 7;
+    READDIR = 8;
+    UNLINK = 9;
+    RMDIR = 10;
     INFO = 11;
     // FS
-    WRITE = 12;
-    READ = 13;
+    // WRITE = 12;
+    // READ = 13;
   }
 
   required int32 id = 1;
@@ -53,9 +54,10 @@ message Statistics {
 
 message Answer {
   required int32 id = 1;
-  required int32 failure = 2 [default = 0];
-  required Subject subject = 3;
+  optional int32 failure = 2 [default = 0];
+  optional string message = 3;
   optional Statistics statistics = 4;
   repeated Dat list = 5;
+  repeated string files = 6;
 }
 ```

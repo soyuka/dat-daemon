@@ -204,17 +204,16 @@ function defineInstruction () {
   Instruction.Action = {
   "ADD": 0,
   "REMOVE": 1,
-  "GET": 3,
-  "START": 4,
-  "PAUSE": 5,
-  "LOAD": 6,
-  "WATCH": 7,
-  "MKDIR": 8,
-  "READDIR": 9,
-  "UNLINK": 10,
-  "INFO": 11,
-  "WRITE": 12,
-  "READ": 13
+  "GET": 2,
+  "START": 3,
+  "PAUSE": 4,
+  "LOAD": 5,
+  "WATCH": 6,
+  "MKDIR": 7,
+  "READDIR": 8,
+  "UNLINK": 9,
+  "RMDIR": 10,
+  "INFO": 11
 }
 
   var enc = [
@@ -497,7 +496,7 @@ function defineStatistics () {
 function defineAnswer () {
   var enc = [
     encodings.int32,
-    encodings.enum,
+    encodings.string,
     Statistics,
     Dat
   ]
@@ -511,12 +510,14 @@ function defineAnswer () {
     if (!defined(obj.id)) throw new Error("id is required")
     var len = enc[0].encodingLength(obj.id)
     length += 1 + len
-    if (!defined(obj.failure)) throw new Error("failure is required")
-    var len = enc[0].encodingLength(obj.failure)
-    length += 1 + len
-    if (!defined(obj.subject)) throw new Error("subject is required")
-    var len = enc[1].encodingLength(obj.subject)
-    length += 1 + len
+    if (defined(obj.failure)) {
+      var len = enc[0].encodingLength(obj.failure)
+      length += 1 + len
+    }
+    if (defined(obj.message)) {
+      var len = enc[1].encodingLength(obj.message)
+      length += 1 + len
+    }
     if (defined(obj.statistics)) {
       var len = enc[2].encodingLength(obj.statistics)
       length += varint.encodingLength(len)
@@ -527,6 +528,13 @@ function defineAnswer () {
         if (!defined(obj.list[i])) continue
         var len = enc[3].encodingLength(obj.list[i])
         length += varint.encodingLength(len)
+        length += 1 + len
+      }
+    }
+    if (defined(obj.files)) {
+      for (var i = 0; i < obj.files.length; i++) {
+        if (!defined(obj.files[i])) continue
+        var len = enc[1].encodingLength(obj.files[i])
         length += 1 + len
       }
     }
@@ -541,14 +549,16 @@ function defineAnswer () {
     buf[offset++] = 8
     enc[0].encode(obj.id, buf, offset)
     offset += enc[0].encode.bytes
-    if (!defined(obj.failure)) throw new Error("failure is required")
-    buf[offset++] = 16
-    enc[0].encode(obj.failure, buf, offset)
-    offset += enc[0].encode.bytes
-    if (!defined(obj.subject)) throw new Error("subject is required")
-    buf[offset++] = 24
-    enc[1].encode(obj.subject, buf, offset)
-    offset += enc[1].encode.bytes
+    if (defined(obj.failure)) {
+      buf[offset++] = 16
+      enc[0].encode(obj.failure, buf, offset)
+      offset += enc[0].encode.bytes
+    }
+    if (defined(obj.message)) {
+      buf[offset++] = 26
+      enc[1].encode(obj.message, buf, offset)
+      offset += enc[1].encode.bytes
+    }
     if (defined(obj.statistics)) {
       buf[offset++] = 34
       varint.encode(enc[2].encodingLength(obj.statistics), buf, offset)
@@ -566,6 +576,14 @@ function defineAnswer () {
         offset += enc[3].encode.bytes
       }
     }
+    if (defined(obj.files)) {
+      for (var i = 0; i < obj.files.length; i++) {
+        if (!defined(obj.files[i])) continue
+        buf[offset++] = 50
+        enc[1].encode(obj.files[i], buf, offset)
+        offset += enc[1].encode.bytes
+      }
+    }
     encode.bytes = offset - oldOffset
     return buf
   }
@@ -578,16 +596,15 @@ function defineAnswer () {
     var obj = {
       id: 0,
       failure: 0,
-      subject: 0,
+      message: "",
       statistics: null,
-      list: []
+      list: [],
+      files: []
     }
     var found0 = false
-    var found1 = false
-    var found2 = false
     while (true) {
       if (end <= offset) {
-        if (!found0 || !found1 || !found2) throw new Error("Decoded message is not valid")
+        if (!found0) throw new Error("Decoded message is not valid")
         decode.bytes = offset - oldOffset
         return obj
       }
@@ -603,12 +620,10 @@ function defineAnswer () {
         case 2:
         obj.failure = enc[0].decode(buf, offset)
         offset += enc[0].decode.bytes
-        found1 = true
         break
         case 3:
-        obj.subject = enc[1].decode(buf, offset)
+        obj.message = enc[1].decode(buf, offset)
         offset += enc[1].decode.bytes
-        found2 = true
         break
         case 4:
         var len = varint.decode(buf, offset)
@@ -621,6 +636,10 @@ function defineAnswer () {
         offset += varint.decode.bytes
         obj.list.push(enc[3].decode(buf, offset, offset + len))
         offset += enc[3].decode.bytes
+        break
+        case 6:
+        obj.files.push(enc[1].decode(buf, offset))
+        offset += enc[1].decode.bytes
         break
         default:
         offset = skip(prefix & 7, buf, offset)

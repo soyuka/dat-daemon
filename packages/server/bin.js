@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const WebSocket = require('websocket-stream')
 const {Transform} = require('stream')
-const {onmessage, close, config, onrequest, init} = require('./')
+const {onmessage, close, config, onrequest, init, log} = require('./')
 const configuration = config()
 var server
 
@@ -9,6 +9,8 @@ daemon()
 
 async function daemon () {
   await init()
+
+  log('Launching server on port %s', configuration.port)
 
   server = WebSocket.createServer({ port: configuration.port, perMessageDeflate: false }, function (socket, req) {
     if (req.url !== '/') {

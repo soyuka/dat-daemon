@@ -8,6 +8,12 @@ const KEY_REQUIRED_ANSWER = id => Answer.encode({message: 'Key required.', failu
 const KEY_NOT_FOUND_ANSWER = id => Answer.encode({message: `${key} not found.`, failure: 1, id: id})
 const state = new Map()
 
+function keyExists (key) {
+  if (!key) return
+  if (state.has(key)) return true
+  return false
+}
+
 /**
  * @TODO check silent or whatever
  */
@@ -15,11 +21,7 @@ function log (...data) {
   console.error.apply(this, data)
 }
 
-function keyExists (key) {
-  if (!key) return
-  if (state.has(key)) return true
-  return false
-}
+module.exports.log = log
 
 //  update state + join network etc.
 async function init() {
@@ -30,8 +32,16 @@ async function init() {
 module.exports.init = init
 
 async function add(message) {
-  if (!message.key || !message.path) {
-    return Answer.encode({message: 'Key and directory are required.', failure: 1, id: message.id})
+  if (!message.path) {
+    return Answer.encode({message: 'Directory is required.', failure: 1, id: message.id})
+  }
+
+  if (!message.key) {
+    const options = {importFiles: true}
+    const dat = await Dat.create(null, message.path, )
+    dat._daemonOptions = options
+    state.set(item.key, dat)
+    message.key = dat.key.toString('hex')
   }
 
   if (keyExists(message) === true) {
@@ -40,8 +50,7 @@ async function add(message) {
   }
 
   await database.put({key: message.key, path: message.path || `${config.data}/${message.key}`, options: message.options})
-  await updateState()
-  joinNetworks()
+  await init()
   log(`Added ${message.key}.`)
   return Answer.encode({message: `${message.key} added.`, id: message.id})
 }

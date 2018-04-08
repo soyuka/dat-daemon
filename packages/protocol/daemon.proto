@@ -53,7 +53,7 @@ message Statistics {
 
 message Answer {
   required int32 id = 1;
-  required int32 failure = 2 [default = 0];
+  optional int32 failure = 2 [default = 0];
   optional string message = 3;
   optional Statistics statistics = 4;
   repeated Dat list = 5;
