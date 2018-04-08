@@ -1,5 +1,4 @@
 const {Instruction, Subject, Answer} = require('dat-daemon-protocol')
-const pretty = require('prettier-bytes')
 const eol = require('os').EOL
 const { Writable } = require('stream')
 const config = require('./lib/config')()
@@ -26,7 +25,6 @@ function keyExists (key) {
 async function init() {
   await updateState()
   joinNetworks()
-
 }
 
 module.exports.init = init
@@ -149,11 +147,7 @@ async function onmessage (message) {
     case Instruction.Action.INFO:
       const {stats, network} = state.get(message.key)
       const files = stats.get()
-      const str = `
-${files.files} files (${pretty(files.byteLength)})
-${network.connected} / ${stats.peers.total} Peers
-${pretty(stats.network.uploadSpeed)} Upload ${pretty(stats.network.downloadSpeed)} Download
-`
+
       const statistics = {
         files: files.files,
         byteLength: files.byteLength,
@@ -165,7 +159,7 @@ ${pretty(stats.network.uploadSpeed)} Upload ${pretty(stats.network.downloadSpeed
         completePeers: stats.peers.complete
       }
 
-      return Answer.encode({message: str, statistics})
+      return Answer.encode({statistics})
 
     default:
       return Answer.encode({message: `Unsupported action, actions are one of: ${Object.keys(Instruction.Action)}`, failure: 1})
@@ -238,3 +232,4 @@ function close () {
 }
 
 module.exports.close = close
+module.exports.config = require('./lib/config')

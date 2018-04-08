@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 const WebSocket = require('websocket-stream')
 const {Transform} = require('stream')
-const {onmessage, joinNetworks, close, updateState, config, onrequest} = require('dat-daemon')
+const {onmessage, close, config, onrequest, init} = require('./')
 const configuration = config()
 var server
 
 daemon()
 
 async function daemon () {
-  await updateState()
-  joinNetworks()
+  await init()
 
   server = WebSocket.createServer({ port: configuration.port, perMessageDeflate: false }, function (socket, req) {
     if (req.url !== '/') {
