@@ -119,7 +119,7 @@ async function onmessage (message) {
 
     case Instruction.Action.MKDIR:
       try {
-        await Dat.mkdir(message.path)
+        await Dat.mkdir(state.get(message.key), message.path)
         return Answer.encode({message: `Directory created.`, id: message.id})
       } catch (err) {
         log(`Error mkdir`, err.message)
@@ -128,7 +128,7 @@ async function onmessage (message) {
 
     case Instruction.Action.READDIR:
       try {
-        const list = await Dat.readdir(message.path)
+        const list = await Dat.readdir(state.get(message.key), message.path)
         return Answer.encode({message: `Directory created.`, id: message.id, files: list})
       } catch (err) {
         log(`Error readdir`, err.message)
@@ -137,7 +137,7 @@ async function onmessage (message) {
 
     case Instruction.Action.RMDIR:
       try {
-        await Dat.rmdir(message.path)
+        await Dat.rmdir(state.get(message.key), message.path)
         return Answer.encode({message: `Directory removed.`, id: message.id})
       } catch (err) {
         log(`Error rmdir`, err.message)
@@ -146,7 +146,7 @@ async function onmessage (message) {
 
     case Instruction.Action.UNLINK:
       try {
-        await Dat.unlink(message.path)
+        await Dat.unlink(state.get(message.key), message.path)
         return Answer.encode({message: `File removed.`, id: message.id})
       } catch (err) {
         log(`Error unlink`, err.message)

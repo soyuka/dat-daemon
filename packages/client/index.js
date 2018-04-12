@@ -5,51 +5,204 @@ const configuration = {
 }
 
 async function open(url) {
-  const ws = Websocket(url)
-
   return new Promise(function (resolve, reject) {
-    ws.on('open', function () {
+    const ws = Websocket(url)
+    ws.socket.on('open', function () {
       resolve(ws)
     })
 
-    ws.on('error', reject)
+    ws.socket.on('error', function (err) {
+      reject(err)
+    })
   })
 }
 
-async function DatDaemonClient(url = `ws://localhost:${configuration.port}`, onanswer) {
+async function DatDaemonClient(url = `ws://localhost:${configuration.port}`) {
   const client = await open(url)
   let id = 0
+  /**
+   * This stores promised by "id", it's used to route the answer to the correct resolution
+   */
+  const router = new Map()
 
   client.on('data', function (d) {
-    onanswer(Answer.decode(d))
+    const answer = Answer.decode(d)
+
+    router.get(answer.id)(answer)
   })
 
+  function route (id, transform) {
+    return new Promise(function (resolve, reject) {
+      router.set(id, function (data) {
+        router.delete(id)
+        if (data.failure) {
+          return reject(data.message)
+        }
+
+        resolve(transform ? transform(data) : data)
+      })
+    })
+  }
+
   function list () {
+    const current = ++id
     client.write(Instruction.encode({
       subject: Subject.LIST,
       action: Instruction.Action.GET,
-      id: ++id
+      id: current
     }))
+
+    return route(current, function (data) {
+      return data.list
+    })
   }
 
   function add (path, key) {
+    const current = ++id
     client.write(Instruction.encode({
       subject: Subject.LIST,
       action: Instruction.Action.ADD,
       path: path,
       key: key,
-      id: ++id
+      id: current
     }))
+
+    return route(current)
   }
 
   function remove (path, key) {
+    const current = ++id
     client.write(Instruction.encode({
       subject: Subject.LIST,
       action: Instruction.Action.REMOVE,
       key: key,
-      id: ++id
+      id: current
     }))
+
+    return route(current)
   }
+
+  function start (key) {
+    const current = ++id
+
+    client.write(Instruction.encode({
+      subject: Subject.ITEM,
+      action: Instruction.Action.START,
+      key: key,
+      id: current
+    }))
+
+    return route(current)
+  }
+
+  function remove (key) {
+    const current = ++id
+
+    client.write(Instruction.encode({
+      subject: Subject.ITEM,
+      action: Instruction.Action.REMOVE,
+      key: key,
+      id: current
+    }))
+
+    return route(current)
+  }
+
+  function load (key) {
+    const current = ++id
+
+    client.write(Instruction.encode({
+      subject: Subject.ITEM,
+      action: Instruction.Action.LOAD,
+      key: key,
+      id: current
+    }))
+
+    return route(current)
+  }
+
+  function watch (key) {
+    const current = ++id
+
+    client.write(Instruction.encode({
+      subject: Subject.ITEM,
+      action: Instruction.Action.WATCH,
+      key: key,
+      id: current
+    }))
+
+    return route(current)
+  }
+
+  function mkdir (key, path) {
+    const current = ++id
+
+    client.write(Instruction.encode({
+      subject: Subject.ITEM,
+      action: Instruction.Action.MKDIR,
+      path: path,
+      key: key,
+      id: current
+    }))
+
+    return route(current)
+  }
+
+  function readdir (key, path) {
+    const current = ++id
+
+    client.write(Instruction.encode({
+      subject: Subject.ITEM,
+      action: Instruction.Action.READDIR,
+      path: path,
+      key: key,
+      id: current
+    }))
+
+    return route(current)
+  }
+
+  function rmdir (key, path) {
+    const current = ++id
+
+    client.write(Instruction.encode({
+      subject: Subject.ITEM,
+      action: Instruction.Action.RMDIR,
+      path: path,
+      key: key,
+      id: current
+    }))
+
+    return route(current)
+  }
+
+  function unlink (key, path) {
+    const current = ++id
+
+    client.write(Instruction.encode({
+      subject: Subject.ITEM,
+      action: Instruction.Action.UNLINK,
+      path: path,
+      key: key,
+      id: current
+    }))
+
+    return route(current)
+  }
+
+  function info (key) {
+    const current = ++id
+
+    client.write(Instruction.encode({
+      subject: Subject.ITEM,
+      action: Instruction.Action.INFO,
+      key: key,
+      id: current
+    }))
+
+    return route(current)
+  }
+
 
   async function createReadStream(key, path) {
     return await open(`${url}/${key}/read/${path}`)
