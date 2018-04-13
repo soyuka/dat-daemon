@@ -4,7 +4,7 @@ const configuration = {
   port: 8477
 }
 
-async function open(url) {
+async function open (url) {
   return new Promise(function (resolve, reject) {
     const ws = Websocket(url)
     ws.socket.on('open', function () {
@@ -17,7 +17,7 @@ async function open(url) {
   })
 }
 
-async function DatDaemonClient(url = `ws://localhost:${configuration.port}`) {
+async function DatDaemonClient (url = `ws://localhost:${configuration.port}`) {
   const client = await open(url)
   let id = 0
   /**
@@ -35,7 +35,7 @@ async function DatDaemonClient(url = `ws://localhost:${configuration.port}`) {
     return new Promise(function (resolve, reject) {
       router.set(id, function (data) {
         router.delete(id)
-        if (data.failure) {
+        if (data.failure === 1) {
           return reject(data.message)
         }
 
@@ -57,7 +57,7 @@ async function DatDaemonClient(url = `ws://localhost:${configuration.port}`) {
     })
   }
 
-  function add (path, key) {
+  function add (path, key = null) {
     const current = ++id
     client.write(Instruction.encode({
       subject: Subject.LIST,
@@ -70,7 +70,7 @@ async function DatDaemonClient(url = `ws://localhost:${configuration.port}`) {
     return route(current)
   }
 
-  function remove (path, key) {
+  function removeList (path, key) {
     const current = ++id
     client.write(Instruction.encode({
       subject: Subject.LIST,
@@ -148,7 +148,7 @@ async function DatDaemonClient(url = `ws://localhost:${configuration.port}`) {
     return route(current)
   }
 
-  function readdir (key, path) {
+  function readdir (key, path = '') {
     const current = ++id
 
     client.write(Instruction.encode({
@@ -159,7 +159,9 @@ async function DatDaemonClient(url = `ws://localhost:${configuration.port}`) {
       id: current
     }))
 
-    return route(current)
+    return route(current, function (data) {
+      return data.files
+    })
   }
 
   function rmdir (key, path) {
@@ -203,21 +205,29 @@ async function DatDaemonClient(url = `ws://localhost:${configuration.port}`) {
     return route(current)
   }
 
-
-  async function createReadStream(key, path) {
-    return await open(`${url}/${key}/read/${path}`)
+  async function createReadStream (key, path) {
+    return open(`${url}/${key}/read/${path}`)
   }
 
-  async function createWriteStream(key, path) {
-    return await open(`${url}/${key}/write/${path}`)
+  async function createWriteStream (key, path) {
+    return open(`${url}/${key}/write/${path}`)
   }
 
   return {
     list,
     add,
+    removeList,
+    start,
+    load,
     remove,
+    watch,
+    mkdir,
+    readdir,
+    rmdir,
+    unlink,
+    info,
     createReadStream,
-    createWriteStream,
+    createWriteStream
   }
 }
 

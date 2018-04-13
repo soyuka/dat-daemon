@@ -1,12 +1,23 @@
 const {Instruction, Subject, Answer} = require('dat-daemon-protocol')
-const eol = require('os').EOL
-const { Writable } = require('stream')
+const { existsSync, mkdir } = require('fs')
 const config = require('./lib/config')()
 const database = require('./lib/database')
 const Dat = require('./lib/dat')
 const KEY_REQUIRED_ANSWER = id => Answer.encode({message: 'Key required.', failure: 1, id: id})
-const KEY_NOT_FOUND_ANSWER = id => Answer.encode({message: `${key} not found.`, failure: 1, id: id})
+const KEY_NOT_FOUND_ANSWER = (key, id) => Answer.encode({message: `${key} not found.`, failure: 1, id: id})
 const state = new Map()
+
+function fsMkdir (path) {
+  return new Promise(function (resolve, reject) {
+    mkdir(path, function (err) {
+      if (err) {
+        return reject(err)
+      }
+
+      resolve()
+    })
+  })
+}
 
 function keyExists (key) {
   if (!key) return
@@ -24,47 +35,51 @@ function log (...data) {
 module.exports.log = log
 
 //  update state + join network etc.
-async function init() {
+async function init () {
   await updateState()
   joinNetworks()
 }
 
 module.exports.init = init
 
-async function add(message) {
+async function add (message) {
   if (!message.path) {
     return Answer.encode({message: 'Directory is required.', failure: 1, id: message.id})
   }
 
+  if (!existsSync(message.path)) {
+    await fsMkdir(message.path)
+  }
+
   if (!message.key) {
     const options = {importFiles: true}
-    const dat = await Dat.create(null, message.path, )
+    const dat = await Dat.create(null, message.path, options)
     dat._daemonOptions = options
-    state.set(item.key, dat)
     message.key = dat.key.toString('hex')
-  }
-
-  if (keyExists(message) === true) {
+    state.set(message.key, dat)
+  } else if (keyExists(message.key) === true) {
     log(`${message.key} exists`)
-    return Answer.encode({message: `${message.key} exists already.`, failure: 2, id: message.id})
+    return Answer.encode({message: `${message.key} exists already.`, failure: 2, id: message.id, key: message.key})
   }
 
-  await database.put({key: message.key, path: message.path || `${config.data}/${message.key}`, options: message.options})
+  const key = await Dat.resolve(message.key)
+
+  await database.put({key: key, path: message.path || `${config.data}/${key}`, options: message.options})
   await init()
-  log(`Added ${message.key}.`)
-  return Answer.encode({message: `${message.key} added.`, id: message.id})
+  log(`Added ${key}.`)
+  return Answer.encode({message: `${key} added.`, id: message.id, key: key})
 }
 
-async function remove(message) {
-  const exists = keyExists(message)
-  if (exists === false) return KEY_NOT_FOUND_ANSWER(message.id)
+async function remove (message) {
+  const exists = keyExists(message.key)
+  if (exists === false) return KEY_NOT_FOUND_ANSWER(message.key, message.id)
   if (exists === undefined) return KEY_REQUIRED_ANSWER(message.id)
 
   await database.remove(message.key)
   state.get(message.key).pause()
   state.delete(message.key)
   log(`Removed ${message.key}.`)
-  return Answer.encode({message: `${message.key} removed.`, id: message.id})
+  return Answer.encode({message: `${message.key} removed.`, id: message.id, key: message.key})
 }
 
 async function onmessage (message) {
@@ -92,65 +107,74 @@ async function onmessage (message) {
     return Answer.encode({message: `Unsupported subject, subject must be one of: LIST, ITEM`, failure: 1, id: message.id})
   }
 
-  const exists = keyExists(message)
+  const exists = keyExists(message.key)
 
   if (exists === undefined) return KEY_REQUIRED_ANSWER(message.id)
-  if (exists === false) return KEY_NOT_FOUND_ANSWER(message.id)
+  if (exists === false) return KEY_NOT_FOUND_ANSWER(message.key, message.id)
 
   switch (message.action) {
     // List
     case Instruction.Action.START:
       state.get(message.key).resume()
       log(`Started ${message.key}.`)
-      return Answer.encode({message: `${message.key} started.`, id: message.id})
+      return Answer.encode({message: `${message.key} started.`, id: message.id, key: message.key})
 
     case Instruction.Action.PAUSE:
       state.get(message.key).pause()
       log(`Paused ${message.key}.`)
-      return Answer.encode({message: `${message.key} paused.`, id: message.id})
+      return Answer.encode({message: `${message.key} paused.`, id: message.id, key: message.key})
 
     case Instruction.Action.LOAD:
       state.get(message.key).importFiles()
       log(`Importing files ${message.key}.`)
-      return Answer.encode({message: `${message.key} loaded.`, id: message.id})
+      return Answer.encode({message: `${message.key} loaded.`, id: message.id, key: message.key})
 
     case Instruction.Action.WATCH:
-      return Answer.encode({message: `Watch not implemented.`, id: message.id})
+      return Answer.encode({message: `Watch not implemented.`, id: message.id, key: message.key})
 
     case Instruction.Action.MKDIR:
       try {
         await Dat.mkdir(state.get(message.key), message.path)
-        return Answer.encode({message: `Directory created.`, id: message.id})
+        return Answer.encode({message: `Directory created.`, id: message.id, key: message.key})
       } catch (err) {
         log(`Error mkdir`, err.message)
-        return Answer.encode({message: `Error while creating the directory: ${err.message}`, id: message.id, failure: 1})
+        return Answer.encode({message: `Error while creating the directory: ${err.message}`, id: message.id, failure: 1, key: message.key})
       }
 
     case Instruction.Action.READDIR:
       try {
         const list = await Dat.readdir(state.get(message.key), message.path)
-        return Answer.encode({message: `Directory created.`, id: message.id, files: list})
+        return Answer.encode({message: `List success.`, id: message.id, files: list, key: message.key})
       } catch (err) {
         log(`Error readdir`, err.message)
-        return Answer.encode({message: `Error while reading the directory: ${err.message}`, id: message.id, failure: 1})
+        return Answer.encode({message: `Error while reading the directory: ${err.message}`, id: message.id, failure: 1, key: message.key})
+      }
+
+    case Instruction.Action.STAT:
+      try {
+        const stat = await Dat.stat(state.get(message.key), message.path)
+        return Answer.encode({message: `Stat success.`, id: message.id, stat: stat, key: message.key})
+      } catch (err) {
+        log(`Error stat`, err.message)
+        return Answer.encode({message: `Error while reading the directory: ${err.message}`, id: message.id, failure: 1, key: message.key})
       }
 
     case Instruction.Action.RMDIR:
       try {
         await Dat.rmdir(state.get(message.key), message.path)
-        return Answer.encode({message: `Directory removed.`, id: message.id})
+        return Answer.encode({message: `Directory removed.`, id: message.id, key: message.key})
       } catch (err) {
         log(`Error rmdir`, err.message)
-        return Answer.encode({message: `Error while removing the directory: ${err.message}`, id: message.id, failure: 1})
+        return Answer.encode({message: `Error while removing the directory: ${err.message}`, id: message.id, failure: 1, key: message.key})
       }
 
     case Instruction.Action.UNLINK:
       try {
         await Dat.unlink(state.get(message.key), message.path)
-        return Answer.encode({message: `File removed.`, id: message.id})
+        return Answer.encode({message: `File removed.`, id: message.id, key: message.key})
       } catch (err) {
         log(`Error unlink`, err.message)
-        return Answer.encode({message: `Error while removing the file: ${err.message}`, id: message.id, failure: 1})
+        return Answer.encode({message: `Error while removing the file: ${err.message}`, id: message.id, failure: 1, key: message.key})
       }
 
     case Instruction.Action.INFO:
@@ -168,7 +192,7 @@ async function onmessage (message) {
         completePeers: stats.peers.complete
       }
 
-      return Answer.encode({statistics})
+      return Answer.encode({statistics, key: message.key})
 
     default:
       return Answer.encode({message: `Unsupported action, actions are one of: ${Object.keys(Instruction.Action)}`, failure: 1})
@@ -178,26 +202,31 @@ async function onmessage (message) {
 module.exports.onmessage = onmessage
 
 function onrequest (url, socket) {
-  url = url.split('/')
+  url = url.replace('dat://', '').split(/\/\/?/)
   url.shift()
 
-  const action = url.shift()
   const key = url.shift()
+  const action = url.shift()
   const path = url.join('/')
   const exists = keyExists(key)
 
-  if (exists === undefined) return KEY_REQUIRED_ANSWER(message.id)
-  if (exists !== true) return KEY_NOT_FOUND_ANSWER(message.id)
+  if (exists === undefined) return socket.destroy()
+  if (exists !== true) return socket.destroy()
+  // if (exists === undefined) return KEY_REQUIRED_ANSWER(-1)
+  // if (exists !== true) return KEY_NOT_FOUND_ANSWER(key, -1)
 
   switch (action) {
     case 'read':
+      log('Creating read stream on dat://%s/%s', key, path)
       state.get(key).archive.createReadStream(path).pipe(socket)
       break
     case 'write':
+      log('Creating write stream on dat://%s/%s', key, path)
       socket.pipe(state.get(key).archive.createWriteStream(path))
       break
     default:
-      return Answer.encode({message: `Unsupported action, actions are one of: read, write`, failure: 1})
+      return socket.destroy()
+      // return Answer.encode({message: `Unsupported action, actions are one of: read, write`, failure: 1, key: key})
   }
 }
 

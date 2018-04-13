@@ -59,5 +59,6 @@ message Answer {
   optional Statistics statistics = 4;
   repeated Dat list = 5;
   repeated string files = 6;
+  optional string key = 7;
 }
 ```

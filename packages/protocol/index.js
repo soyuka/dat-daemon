@@ -538,6 +538,10 @@ function defineAnswer () {
         length += 1 + len
       }
     }
+    if (defined(obj.key)) {
+      var len = enc[1].encodingLength(obj.key)
+      length += 1 + len
+    }
     return length
   }
 
@@ -584,6 +588,11 @@ function defineAnswer () {
         offset += enc[1].encode.bytes
       }
     }
+    if (defined(obj.key)) {
+      buf[offset++] = 58
+      enc[1].encode(obj.key, buf, offset)
+      offset += enc[1].encode.bytes
+    }
     encode.bytes = offset - oldOffset
     return buf
   }
@@ -599,7 +608,8 @@ function defineAnswer () {
       message: "",
       statistics: null,
       list: [],
-      files: []
+      files: [],
+      key: ""
     }
     var found0 = false
     while (true) {
@@ -639,6 +649,10 @@ function defineAnswer () {
         break
         case 6:
         obj.files.push(enc[1].decode(buf, offset))
+        offset += enc[1].decode.bytes
+        break
+        case 7:
+        obj.key = enc[1].decode(buf, offset)
         offset += enc[1].decode.bytes
         break
         default:
