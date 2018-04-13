@@ -29,6 +29,7 @@ message Instruction {
     UNLINK = 9;
     RMDIR = 10;
     INFO = 11;
+    STAT = 12;
     // FS
     // WRITE = 12;
     // READ = 13;
@@ -52,6 +53,19 @@ message Statistics {
   required float completePeers = 8;
 }
 
+// https://github.com/mafintosh/hyperdrive/blob/master/schema.proto
+message Stat {
+  required uint32 mode = 1;
+  optional uint32 uid = 2;
+  optional uint32 gid = 3;
+  optional uint64 size = 4;
+  optional uint64 blocks = 5;
+  optional uint64 offset = 6;
+  optional uint64 byteOffset = 7;
+  optional uint64 mtime = 8;
+  optional uint64 ctime = 9;
+}
+
 message Answer {
   required int32 id = 1;
   optional int32 failure = 2 [default = 0];
@@ -60,5 +74,6 @@ message Answer {
   repeated Dat list = 5;
   repeated string files = 6;
   optional string key = 7;
+  optional Stat stat = 8;
 }
 ```

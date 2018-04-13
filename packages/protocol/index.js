@@ -43,6 +43,13 @@ var Statistics = exports.Statistics = {
   decode: null
 }
 
+var Stat = exports.Stat = {
+  buffer: true,
+  encodingLength: null,
+  encode: null,
+  decode: null
+}
+
 var Answer = exports.Answer = {
   buffer: true,
   encodingLength: null,
@@ -54,6 +61,7 @@ defineDat()
 defineList()
 defineInstruction()
 defineStatistics()
+defineStat()
 defineAnswer()
 
 function defineDat () {
@@ -213,7 +221,8 @@ function defineInstruction () {
   "READDIR": 8,
   "UNLINK": 9,
   "RMDIR": 10,
-  "INFO": 11
+  "INFO": 11,
+  "STAT": 12
 }
 
   var enc = [
@@ -493,12 +502,185 @@ function defineStatistics () {
   }
 }
 
+function defineStat () {
+  var enc = [
+    encodings.varint
+  ]
+
+  Stat.encodingLength = encodingLength
+  Stat.encode = encode
+  Stat.decode = decode
+
+  function encodingLength (obj) {
+    var length = 0
+    if (!defined(obj.mode)) throw new Error("mode is required")
+    var len = enc[0].encodingLength(obj.mode)
+    length += 1 + len
+    if (defined(obj.uid)) {
+      var len = enc[0].encodingLength(obj.uid)
+      length += 1 + len
+    }
+    if (defined(obj.gid)) {
+      var len = enc[0].encodingLength(obj.gid)
+      length += 1 + len
+    }
+    if (defined(obj.size)) {
+      var len = enc[0].encodingLength(obj.size)
+      length += 1 + len
+    }
+    if (defined(obj.blocks)) {
+      var len = enc[0].encodingLength(obj.blocks)
+      length += 1 + len
+    }
+    if (defined(obj.offset)) {
+      var len = enc[0].encodingLength(obj.offset)
+      length += 1 + len
+    }
+    if (defined(obj.byteOffset)) {
+      var len = enc[0].encodingLength(obj.byteOffset)
+      length += 1 + len
+    }
+    if (defined(obj.mtime)) {
+      var len = enc[0].encodingLength(obj.mtime)
+      length += 1 + len
+    }
+    if (defined(obj.ctime)) {
+      var len = enc[0].encodingLength(obj.ctime)
+      length += 1 + len
+    }
+    return length
+  }
+
+  function encode (obj, buf, offset) {
+    if (!offset) offset = 0
+    if (!buf) buf = Buffer.allocUnsafe(encodingLength(obj))
+    var oldOffset = offset
+    if (!defined(obj.mode)) throw new Error("mode is required")
+    buf[offset++] = 8
+    enc[0].encode(obj.mode, buf, offset)
+    offset += enc[0].encode.bytes
+    if (defined(obj.uid)) {
+      buf[offset++] = 16
+      enc[0].encode(obj.uid, buf, offset)
+      offset += enc[0].encode.bytes
+    }
+    if (defined(obj.gid)) {
+      buf[offset++] = 24
+      enc[0].encode(obj.gid, buf, offset)
+      offset += enc[0].encode.bytes
+    }
+    if (defined(obj.size)) {
+      buf[offset++] = 32
+      enc[0].encode(obj.size, buf, offset)
+      offset += enc[0].encode.bytes
+    }
+    if (defined(obj.blocks)) {
+      buf[offset++] = 40
+      enc[0].encode(obj.blocks, buf, offset)
+      offset += enc[0].encode.bytes
+    }
+    if (defined(obj.offset)) {
+      buf[offset++] = 48
+      enc[0].encode(obj.offset, buf, offset)
+      offset += enc[0].encode.bytes
+    }
+    if (defined(obj.byteOffset)) {
+      buf[offset++] = 56
+      enc[0].encode(obj.byteOffset, buf, offset)
+      offset += enc[0].encode.bytes
+    }
+    if (defined(obj.mtime)) {
+      buf[offset++] = 64
+      enc[0].encode(obj.mtime, buf, offset)
+      offset += enc[0].encode.bytes
+    }
+    if (defined(obj.ctime)) {
+      buf[offset++] = 72
+      enc[0].encode(obj.ctime, buf, offset)
+      offset += enc[0].encode.bytes
+    }
+    encode.bytes = offset - oldOffset
+    return buf
+  }
+
+  function decode (buf, offset, end) {
+    if (!offset) offset = 0
+    if (!end) end = buf.length
+    if (!(end <= buf.length && offset <= buf.length)) throw new Error("Decoded message is not valid")
+    var oldOffset = offset
+    var obj = {
+      mode: 0,
+      uid: 0,
+      gid: 0,
+      size: 0,
+      blocks: 0,
+      offset: 0,
+      byteOffset: 0,
+      mtime: 0,
+      ctime: 0
+    }
+    var found0 = false
+    while (true) {
+      if (end <= offset) {
+        if (!found0) throw new Error("Decoded message is not valid")
+        decode.bytes = offset - oldOffset
+        return obj
+      }
+      var prefix = varint.decode(buf, offset)
+      offset += varint.decode.bytes
+      var tag = prefix >> 3
+      switch (tag) {
+        case 1:
+        obj.mode = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        found0 = true
+        break
+        case 2:
+        obj.uid = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        break
+        case 3:
+        obj.gid = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        break
+        case 4:
+        obj.size = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        break
+        case 5:
+        obj.blocks = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        break
+        case 6:
+        obj.offset = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        break
+        case 7:
+        obj.byteOffset = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        break
+        case 8:
+        obj.mtime = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        break
+        case 9:
+        obj.ctime = enc[0].decode(buf, offset)
+        offset += enc[0].decode.bytes
+        break
+        default:
+        offset = skip(prefix & 7, buf, offset)
+      }
+    }
+  }
+}
+
 function defineAnswer () {
   var enc = [
     encodings.int32,
     encodings.string,
     Statistics,
-    Dat
+    Dat,
+    Stat
   ]
 
   Answer.encodingLength = encodingLength
@@ -540,6 +722,11 @@ function defineAnswer () {
     }
     if (defined(obj.key)) {
       var len = enc[1].encodingLength(obj.key)
+      length += 1 + len
+    }
+    if (defined(obj.stat)) {
+      var len = enc[4].encodingLength(obj.stat)
+      length += varint.encodingLength(len)
       length += 1 + len
     }
     return length
@@ -593,6 +780,13 @@ function defineAnswer () {
       enc[1].encode(obj.key, buf, offset)
       offset += enc[1].encode.bytes
     }
+    if (defined(obj.stat)) {
+      buf[offset++] = 66
+      varint.encode(enc[4].encodingLength(obj.stat), buf, offset)
+      offset += varint.encode.bytes
+      enc[4].encode(obj.stat, buf, offset)
+      offset += enc[4].encode.bytes
+    }
     encode.bytes = offset - oldOffset
     return buf
   }
@@ -609,7 +803,8 @@ function defineAnswer () {
       statistics: null,
       list: [],
       files: [],
-      key: ""
+      key: "",
+      stat: null
     }
     var found0 = false
     while (true) {
@@ -654,6 +849,12 @@ function defineAnswer () {
         case 7:
         obj.key = enc[1].decode(buf, offset)
         offset += enc[1].decode.bytes
+        break
+        case 8:
+        var len = varint.decode(buf, offset)
+        offset += varint.decode.bytes
+        obj.stat = enc[4].decode(buf, offset, offset + len)
+        offset += enc[4].decode.bytes
         break
         default:
         offset = skip(prefix & 7, buf, offset)

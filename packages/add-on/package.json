@@ -1,0 +1,19 @@
+{
+  "name": "add-on",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "browserify background.js -o background.build.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dat-daemon-client": "*"
+  },
+  "devDependencies": {
+    "browserify": "^16.2.0",
+    "web-ext": "^2.6.0"
+  }
+}

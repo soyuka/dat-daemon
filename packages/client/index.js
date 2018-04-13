@@ -7,11 +7,11 @@ const configuration = {
 async function open (url) {
   return new Promise(function (resolve, reject) {
     const ws = Websocket(url)
-    ws.socket.on('open', function () {
+    ws.socket.addEventListener('open', function () {
       resolve(ws)
     })
 
-    ws.socket.on('error', function (err) {
+    ws.socket.addEventListener('error', function (err) {
       reject(err)
     })
   })

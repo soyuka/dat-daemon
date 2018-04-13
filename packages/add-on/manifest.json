@@ -1,0 +1,25 @@
+{
+  "name": "dat",
+  "version": "0.0.0",
+  "manifest_version": 2,
+  "background": {
+    "page": "background.html"
+  },
+  "permissions": [
+    "<all_urls>",
+    "idle",
+    "activeTab",
+    "tabs",
+    "notifications",
+    "alarms",
+    "storage",
+    "contextMenus",
+    "clipboardWrite",
+    "webNavigation",
+    "webRequest",
+    "webRequestBlocking"
+  ],
+  "protocol_handlers": [
+    {"protocol": "dat", "name": "Dat", "uriTemplate": "/background.html#!%s"}
+  ]
+}
