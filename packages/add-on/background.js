@@ -1,21 +1,50 @@
 var Client = require('dat-daemon-client')
 
-async function main() {
+async function main () {
   var client = await Client()
   var datUrl = decodeURIComponent(window.location.hash.substring(2))
 
-  const a = await client.add('/home/abluchet/.config/dat-daemon/test', datUrl)
+  console.log(datUrl)
+  if (!datUrl) {
+    alert('whoops no dat url')
+    return
+  }
+  const a = await client.add('/home/soyuka/.config/dat-daemon/test', datUrl)
+  const frame = document.getElementById('datdoc')
+  frame.src = 'dat://'+a.key
 
-  const index = await client.createReadStream(a.key, 'index.html')
-  let body = ''
+  // const doc = document.implementation.createHTMLDocument('')
+  // doc.open()
 
-  index.on('data', function(e) {
-    body += e.toString()
-  })
+  // const index = await client.createReadStream(a.key, 'index.html')
+  //
+  // index.on('data', function(e) {
+  //   // console.log(e.toString())
+  //   // doc.write(e.toString())
+  // })
+  // index.on('end', function () {
+  //   doc.close()
+  //   // var destDocument = frame.contentDocument
+  //   // var srcNode = doc.documentElement
+  //   // var newNode = destDocument.importNode(srcNode, true)
+  //   // destDocument.replaceChild(newNode, destDocument.documentElement)
+  //   console.log(doc)
+  // })
 
-  index.on('end', function () {
-    document.body.innerHTML = body
-  })
 }
 
 main()
+
+function requestListener (requestDetails) {
+  console.log("Loading: " + requestDetails.url);
+}
+
+browser.webRequest.onBeforeRequest.addListener(
+  requestListener,
+  {urls: ['all:urls']}
+);
+
+
+  // "protocol_handlers": [
+  //   {"protocol": "dat", "name": "Dat", "uriTemplate": "/background.html#!%s"}
+  // ]

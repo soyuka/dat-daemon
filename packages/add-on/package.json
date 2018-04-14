@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "browserify background.js -o background.build.js"
+    "build": "browserify background.js -o background.build.js",
+    "watch": "watchify background.js -o background.build.js"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +15,7 @@
   },
   "devDependencies": {
     "browserify": "^16.2.0",
+    "watchify": "^3.11.0",
     "web-ext": "^2.6.0"
   }
 }

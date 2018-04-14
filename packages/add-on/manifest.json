@@ -18,8 +18,5 @@
     "webNavigation",
     "webRequest",
     "webRequestBlocking"
-  ],
-  "protocol_handlers": [
-    {"protocol": "dat", "name": "Dat", "uriTemplate": "/background.html#!%s"}
   ]
 }
