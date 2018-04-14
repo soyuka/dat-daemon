@@ -18,5 +18,8 @@
     "webNavigation",
     "webRequest",
     "webRequestBlocking"
+  ],
+  "protocol_handlers": [
+    {"protocol": "dat", "name": "Dat", "uriTemplate": "http://localhost:4560/%s"}
   ]
 }

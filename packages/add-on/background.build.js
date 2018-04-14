@@ -45,6 +45,11 @@ browser.webRequest.onBeforeRequest.addListener(
   {urls: ['all:urls']}
 );
 
+
+  // "protocol_handlers": [
+  //   {"protocol": "dat", "name": "Dat", "uriTemplate": "/background.html#!%s"}
+  // ]
+
 },{"dat-daemon-client":9}],2:[function(require,module,exports){
 
 },{}],3:[function(require,module,exports){
