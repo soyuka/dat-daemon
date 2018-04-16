@@ -12,7 +12,7 @@ async function daemon () {
 
   log('Launching server on port %s', configuration.port)
 
-  server = WebSocket.createServer({ port: configuration.port, perMessageDeflate: false }, function (socket, req) {
+  server = WebSocket.createServer({ host: configuration.host, port: configuration.port, perMessageDeflate: false }, function (socket, req) {
     if (req.url !== '/') {
       onrequest(req.url, socket)
       return

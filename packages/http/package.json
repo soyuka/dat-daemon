@@ -1,5 +1,5 @@
 {
-  "name": "http",
+  "name": "dat-daemon-http-gateway",
   "version": "1.0.0",
   "description": "",
   "main": "bin.js",

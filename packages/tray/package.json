@@ -15,8 +15,10 @@
   "dependencies": {
     "dat-daemon-http-gateway": "*",
     "dat-daemon-server": "*",
+    "electron": "^1.8.4",
     "gui": "^0.4.1",
     "menubar": "^5.2.3",
-    "relieve": "^2.2.1"
+    "relieve": "^2.2.1",
+    "relieve-logger": "^1.0.5"
   }
 }

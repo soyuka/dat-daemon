@@ -12,10 +12,16 @@ if (!fs.existsSync(CONFIG_DIR)) {
 if (!fs.existsSync(CONFIG_PATH)) {
   fs.writeFileSync(CONFIG_PATH, JSON.stringify({
     data: `${CONFIG_DIR}`,
+    logs: `${CONFIG_DIR}/logs`,
     database: 'database',
+    host: 'localhost',
     port: 8477,
-    http: false,
-    socket: 'datdaemon.sock'
+    socket: 'datdaemon.sock',
+    gateway: {
+      host: 'localhost',
+      port: 3000,
+      sites: `${CONFIG_DIR}/sites`
+    }
   }, null, 2))
 }
 
@@ -47,6 +53,12 @@ function parseConfiguration () {
   try {
     mkdirp.sync(config.data)
   } catch (e) {}
+  try {
+    mkdirp.sync(config.logs)
+  } catch (e) {}
+  try {
+    mkdirp.sync(config.sites)
+  } catch (e) {}
 
   config.socket = `${config.data}/${config.socket}`
   config.port = config.port || 8477
@@ -55,6 +67,8 @@ function parseConfiguration () {
   if (process.env.DEBUG) {
     console.error('Configuration is %j', config)
   }
+
+  config.CONFIG_PATH = CONFIG_PATH
 
   return config
 }
