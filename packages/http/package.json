@@ -3,16 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "bin.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "bin": {
+    "datdaemonhttpd": "./bin.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["dat", "http", "gateway"],
+  "author": "soyuka",
+  "license": "MIT",
   "dependencies": {
     "dat-daemon-client": "*",
     "dat-link-resolve": "^2.1.0",
-    "express": "^4.16.3",
-    "replacestream": "^4.0.3"
+    "express": "^4.16.3"
   }
 }

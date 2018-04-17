@@ -1,15 +1,15 @@
 const gui = require('gui')
 const Logger = require('relieve-logger')
-const Worker = require('relieve/workers/Worker')
 const Task = require('relieve/tasks/ScriptTask')
-const config = require('dat-daemon-server/lib/config')()
+const config = require('dat-daemon/lib/config')()
+const Client = require('dat-daemon-client')
 
 async function main () {
   const icon = gui.Image.createFromPath(`${__dirname}/dat-hexagon.png`)
   const tray = gui.Tray.createWithImage(icon)
 
   const daemonLogger = new Logger(`${config.logs}/daemon.log`, `${config.logs}/daemon.err.log`, {delay: '1d'})
-  const daemon = new Task(require.resolve('dat-daemon-server/bin.js'), {
+  const daemon = new Task(require.resolve('dat-daemon/bin.js'), {
     interfaces: [daemonLogger],
     name: 'dat-daemon'
   })
@@ -29,6 +29,22 @@ async function main () {
     tray.setMenu(getMenu())
   }
 
+  async function getList () {
+    let list = [{label: 'No dats?'}]
+
+    try {
+      const client = Client()
+      list = await client.list()
+
+      console.log('list', list)
+      list.map((a) => {
+        return {label: `${a.key} (${a.path})`}
+      })
+    } catch (e) {}
+      console.log('list', list)
+    return list
+  }
+
   async function toggle (task) {
     if (task.running) {
       await task.kill()
@@ -40,6 +56,8 @@ async function main () {
   }
 
   function getMenu () {
+    const list = getList()
+
     return gui.Menu.create([
       {
         label: `Dat daemon ${daemon.running ? `ws://${config.host}:${config.port}` : 'not running'}`,
@@ -52,27 +70,23 @@ async function main () {
           },
           {
             label: 'List',
-            submenu: [
-              {
-                label: 'xxx'
-              }
-            ]
+            submenu: list
           }
-        ],
+        ]
       },
       {
         label: `Http gateway ${gateway.running ? `http://${config.gateway.host}:${config.gateway.port}` : 'not running'}`,
         submenu: [
           {
-            label: 'Start',
+            label: gateway.running ? 'Stop' : 'Start',
             type: 'checkbox',
             checked: gateway.running,
-            onClick: () => toggle(gateway),
+            onClick: () => toggle(gateway)
           }
-        ],
+        ]
       },
       {
-        label: `Config: ${config.CONFIG_PATH}`
+        label: `Configuration: ${config.CONFIG_PATH}`
       }
     ])
   }

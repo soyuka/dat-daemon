@@ -1,24 +1,22 @@
 {
-  "name": "tray",
+  "name": "dat-daemon-tray",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["dat", "daemon", "tray", "http", "gateway"],
+  "author": "soyuka",
+  "license": "MIT",
   "devDependencies": {
     "yackage": "^0.2.3"
   },
   "dependencies": {
+    "dat-daemon": "*",
     "dat-daemon-http-gateway": "*",
-    "dat-daemon-server": "*",
-    "electron": "^1.8.4",
     "gui": "^0.4.1",
-    "menubar": "^5.2.3",
     "relieve": "^2.2.1",
-    "relieve-logger": "^1.0.5"
+    "relieve-logger": "^1.0.5",
+    "dat-daemon-client": "*"
   }
 }
