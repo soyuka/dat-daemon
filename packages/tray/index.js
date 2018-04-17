@@ -33,15 +33,14 @@ async function main () {
     let list = [{label: 'No dats?'}]
 
     try {
-      const client = Client()
+      const client = Client(`ws://${config.hostname}:${config.port}`)
       list = await client.list()
 
-      console.log('list', list)
       list.map((a) => {
         return {label: `${a.key} (${a.path})`}
       })
     } catch (e) {}
-      console.log('list', list)
+
     return list
   }
 

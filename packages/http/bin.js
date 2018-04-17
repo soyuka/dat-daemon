@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 const express = require('express')
-const p = require('path')
 const url = require('url')
 const datResolve = require('dat-link-resolve')
 const Client = require('dat-daemon-client')
 const config = require('dat-daemon/lib/config')()
 const app = express()
 
-async function main() {
-  const client = await Client(`ws://localhost:${config.port}`)
+async function main () {
+  const client = await Client(`ws://${config.hostname}:${config.port}`)
 
   app.get('*', (req, res) => {
     const q = url.parse(req.url)
@@ -32,7 +31,7 @@ async function main() {
     })
   })
 
-  app.listen(config.gateway.port, () => console.log('Dat gateway listening on port %s!', config.gateway.port))
+  app.listen(config.gateway.port, config.gateway.hostname, () => console.log('Dat gateway listening on port %s!', config.gateway.port))
 }
 
 main()

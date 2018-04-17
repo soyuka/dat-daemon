@@ -11,5 +11,4 @@ npm install dat-daemon-http-gateway
 datdaemonhttpd
 ```
 
-See [`dat-daemon`]() for configuration.
-
+See [`dat-daemon`](https://github.com/soyuka/dat-daemon) for configuration.

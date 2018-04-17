@@ -1,10 +1,12 @@
 {
   "name": "dat-daemon",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "datdaemond": "./bin.js"
   },
   "keywords": [],
   "author": "soyuka",
