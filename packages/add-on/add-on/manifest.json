@@ -1,0 +1,31 @@
+{
+    "author": "soyuka",
+    "description": "Makes the dat:// protocol available",
+    "manifest_version": 2,
+    "name": "Dat",
+    "version": "0.0.2",
+    "icons": {
+        "48": "assets/dat-hexagon.svg"
+    },
+    "background": {
+        "scripts": ["background/index.js"]
+    },
+    "permissions": [
+        "proxy",
+        "tabs",
+        "webRequest",
+        "webRequestBlocking",
+        "<all_urls>",
+        "storage"
+    ],
+    "protocol_handlers": [{
+        "protocol": "dat",
+        "name": "Dat",
+        "uriTemplate": "/background/dat.html#!/%s"
+    }],
+    "page_action": {
+        "browser_style": true,
+        "default_title": "Dat",
+        "default_icon": "assets/dat-hexagon.svg"
+    }
+}
