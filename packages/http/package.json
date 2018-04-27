@@ -1,6 +1,6 @@
 {
   "name": "@dat-daemon/http",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Dat daemon http gateway",
   "main": "bin.js",
   "bin": {
