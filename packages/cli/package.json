@@ -1,0 +1,17 @@
+{
+  "name": "@dat-daemon/cli",
+  "version": "2.0.0",
+  "description": "Dat daemon client",
+  "main": "index.js",
+  "bin": {
+    "dat-daemon": "./bin.js"
+  },
+  "dependencies": {
+    "@dat-daemon/client": "^2.0.0",
+    "chalk": "^2.4.1",
+    "commander": "^2.15.1",
+    "pino": "^4.16.1"
+  },
+  "author": "soyuka",
+  "license": "MIT"
+}
