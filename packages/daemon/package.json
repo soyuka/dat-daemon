@@ -8,7 +8,7 @@
   "bin": {
     "datdaemond": "./bin.js"
   },
-  "keywords": [],
+  "keywords": ["dat", "daemon"],
   "author": "soyuka",
   "license": "MIT",
   "dependencies": {
