@@ -1,5 +1,5 @@
 {
-  "name": "dat-daemon-tray",
+  "name": "@dat-daemon/tray",
   "version": "2.0.0",
   "description": "",
   "main": "index.js",

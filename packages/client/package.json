@@ -1,12 +1,12 @@
 {
-  "name": "dat-daemon-client",
+  "name": "@dat-daemon/client",
   "version": "2.0.0",
   "description": "Dat daemon client",
   "main": "index.js",
   "scripts": {
   },
   "dependencies": {
-    "dat-daemon-protocol": "^2.0.0",
+    "@dat-daemon/protocol": "^2.0.0",
     "websocket-stream": "^5.1.2"
   },
   "author": "soyuka",

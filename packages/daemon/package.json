@@ -12,7 +12,7 @@
   "author": "soyuka",
   "license": "MIT",
   "dependencies": {
-    "dat-daemon-protocol": "^2.0.0",
+    "@dat-daemon/protocol": "^2.0.0",
     "dat-link-resolve": "^2.1.0",
     "dat-node": "^3.5.8",
     "level": "^3.0.0",

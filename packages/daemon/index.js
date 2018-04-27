@@ -6,6 +6,7 @@ const Dat = require('./lib/dat')
 const KEY_REQUIRED_ANSWER = id => Answer.encode({message: 'Key required.', failure: 1, id: id})
 const KEY_NOT_FOUND_ANSWER = (key, id) => Answer.encode({message: `${key} not found.`, failure: 1, id: id})
 const state = new Map()
+const pathState = new Map()
 
 function fsMkdir (path) {
   return new Promise(function (resolve, reject) {
@@ -51,15 +52,16 @@ async function add (message) {
     await fsMkdir(message.path)
   }
 
-  if (!message.key) {
+  if (!message.key && !pathState.has(message.path)) {
     const options = {importFiles: true}
     const dat = await Dat.create(null, message.path, options)
     dat._daemonOptions = options
     message.key = dat.key.toString('hex')
     state.set(message.key, dat)
-  } else if (keyExists(message.key) === true) {
+    pathState.set(message.path, message.key)
+  } else if (keyExists(message.key) === true || pathState.has(message.path)) {
     log(`${message.key} exists`)
-    return Answer.encode({message: `${message.key} exists already.`, failure: 2, id: message.id, key: message.key})
+    return Answer.encode({message: `${message.key || message.path} exists already.`, failure: 2, id: message.id, key: message.key})
   }
 
   const key = await Dat.resolve(message.key)
@@ -192,7 +194,7 @@ async function onmessage (message) {
         completePeers: stats.peers.complete
       }
 
-      return Answer.encode({statistics, key: message.key})
+      return Answer.encode({statistics, key: message.key, id: message.id})
 
     default:
       return Answer.encode({message: `Unsupported action, actions are one of: ${Object.keys(Instruction.Action)}`, failure: 1})
@@ -242,6 +244,7 @@ async function updateState () {
       const dat = await Dat.create(item.key, item.path, item.options)
       dat._daemonOptions = item.options
       state.set(item.key, dat)
+      pathState.set(item.path, item.key)
     }
   }
 }
