@@ -22,6 +22,13 @@ npm install dat-daemon -g
 datdaemond &
 ```
 
+### Cli
+
+```
+npm install @dat-daemon/cli -g
+datdaemon --help
+```
+
 ## Tools
 
 ### HTTP Gateway
@@ -45,4 +52,3 @@ datdaemonhttpd &
 
 - fork `dat-desktop` and plug it on the daemon
 - fork `dat-cli` and plug it on the daemon
-- fork `dat-fox` and enable a client side [DatArchive](https://beakerbrowser.com/docs/apis/dat.html) api
