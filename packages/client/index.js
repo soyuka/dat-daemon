@@ -1,5 +1,5 @@
 const Websocket = require('websocket-stream')
-const {Instruction, Subject, Answer} = require('dat-daemon-protocol')
+const {Instruction, Subject, Answer} = require('@dat-daemon/protocol')
 // @TODO do something with this?
 const configuration = {
   port: 8477

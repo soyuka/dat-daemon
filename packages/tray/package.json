@@ -13,10 +13,10 @@
   },
   "dependencies": {
     "dat-daemon": "*",
-    "dat-daemon-http-gateway": "*",
+    "@dat-daemon/http": "*",
+    "@dat-daemon/client": "*",
     "gui": "^0.4.1",
     "relieve": "^2.2.1",
-    "relieve-logger": "^1.0.5",
-    "dat-daemon-client": "*"
+    "relieve-logger": "^1.0.5"
   }
 }

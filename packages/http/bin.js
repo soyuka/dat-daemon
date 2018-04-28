@@ -2,7 +2,7 @@
 const express = require('express')
 const url = require('url')
 const datResolve = require('dat-link-resolve')
-const Client = require('dat-daemon-client')
+const Client = require('@dat-daemon/client')
 const config = require('dat-daemon/lib/config')()
 const app = express()
 

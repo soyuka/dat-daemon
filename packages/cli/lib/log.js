@@ -10,13 +10,16 @@ function colorize (color) {
   }
 }
 
+function prefix (args) {
+  const t = new Date()
+  args.unshift(`${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`, prefix)
+}
+
 function log (...args) {
-  args.unshift(prefix)
   console.log.apply(null, args.map(colorize('blue')))
 }
 
 function error (...args) {
-  args.unshift(prefix)
   console.log.apply(null, args.map(colorize('red')))
 }
 

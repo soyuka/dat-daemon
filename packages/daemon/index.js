@@ -1,4 +1,4 @@
-const {Instruction, Subject, Answer} = require('dat-daemon-protocol')
+const {Instruction, Subject, Answer} = require('@dat-daemon/protocol')
 const { existsSync, mkdir } = require('fs')
 const config = require('./lib/config')()
 const database = require('./lib/database')

@@ -3,13 +3,13 @@
 ## Installation
 
 ```
-npm install dat-daemon-client
+npm install @dat-daemon/client
 ```
 
 ## Usage
 
 ```javascript
-const Client = require('dat-daemon-client')
+const Client = require('@dat-daemon/client')
 const client = await Client('ws://localhost:8477')
 
 const dat = await client.add('/path/to/at')

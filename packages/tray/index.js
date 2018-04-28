@@ -2,7 +2,7 @@ const gui = require('gui')
 const Logger = require('relieve-logger')
 const Task = require('relieve/tasks/ScriptTask')
 const config = require('dat-daemon/lib/config')()
-const Client = require('dat-daemon-client')
+const Client = require('@dat-daemon/client')
 
 async function main () {
   const icon = gui.Image.createFromPath(`${__dirname}/dat-hexagon.png`)

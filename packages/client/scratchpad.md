@@ -7,7 +7,7 @@ const {Writable} = require('stream')
 const fs = require('fs')
 const argv = require('minimist')(process.argv.slice(2))
 const Websocket = require('websocket-stream')
-const {Answer} = require('dat-daemon-protocol')
+const {Answer} = require('@dat-daemon/protocol')
 const {config, getMessage, help} = require('dat-daemon')
 const configuration = config()
 

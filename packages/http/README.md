@@ -2,7 +2,7 @@
 
 ## Installation
 ```
-npm install dat-daemon-http-gateway
+npm install @dat-daemon/http
 ```
 
 ## Usage

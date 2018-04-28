@@ -1,6 +1,6 @@
 const level = require('level')
 const config = require('./config')()
-const {List} = require('dat-daemon-protocol')
+const {List} = require('@dat-daemon/protocol')
 
 const KEY = 'list'
 let db
