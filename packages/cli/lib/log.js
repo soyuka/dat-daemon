@@ -1,26 +1,33 @@
 const chalk = require('chalk')
 const prefix = chalk.grey('[dat-daemon]') + ' -'
+
 function colorize (color) {
   return function (e, i) {
     if (typeof e === 'object') {
       e = JSON.stringify(e, true, 2)
     }
 
-    return i === 0 ? e : chalk[color](e)
+    return chalk[color](e)
   }
 }
 
-function prefix (args) {
+function pad(s) {
+  return `0${s}`.slice(-2)
+}
+
+function pretty (args, color) {
   const t = new Date()
-  args.unshift(`${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`, prefix)
+  args = args.map(colorize(color))
+  args.unshift([pad(t.getHours()), pad(t.getMinutes()), pad(t.getSeconds())].join(':'), prefix)
+  return args
 }
 
 function log (...args) {
-  console.log.apply(null, args.map(colorize('blue')))
+  console.log.apply(null, pretty(args, 'blue'))
 }
 
 function error (...args) {
-  console.log.apply(null, args.map(colorize('red')))
+  console.log.apply(null, pretty(args, 'red'))
 }
 
 module.exports = {
