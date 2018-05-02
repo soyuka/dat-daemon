@@ -13,6 +13,15 @@ By using a daemon for dat we can:
 
 RFC for the dat daemon protocol is available [here](./rfc.md)
 
+## Quick start
+
+```
+npm install dat-daemon @dat-daemon/cli -g
+datdaemond &
+datdaemon list
+datdaemon add ~/berlin-p2p 38bd32e351630dcb179ee52752d0312ccc6fe95e3ec35c1c9ba7d4d7f15276fe
+```
+
 ## Installation
 
 ### Daemon
