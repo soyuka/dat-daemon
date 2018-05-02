@@ -7,6 +7,10 @@
   "bin": {
     "datdaemond": "./bin.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soyuka/dat-daemon.git"
+  },
   "keywords": [
     "dat",
     "daemon"
