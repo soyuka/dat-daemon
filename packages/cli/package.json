@@ -2,9 +2,9 @@
   "name": "@dat-daemon/cli",
   "version": "2.0.2",
   "description": "Dat daemon client",
-  "main": "bin.js",
+  "main": "datdaemon.js",
   "bin": {
-    "dat-daemon": "./bin.js"
+    "datdaemon": "./datdaemon.js"
   },
   "dependencies": {
     "@dat-daemon/client": "^2.0.2",
