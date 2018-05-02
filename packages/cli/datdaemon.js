@@ -6,7 +6,7 @@ program
   .description('Dat daemon command line interface')
   .command('add [path] <key>', 'Adds an element').alias('a')
   .command('remove [key]', 'Removes an element').alias('rm')
-  .command('info [key]', 'Informations about an element').alias('rm')
+  .command('info [key]', 'Informations about an element')
   .command('list', 'Output list').alias('l')
   .parse(process.argv)
 

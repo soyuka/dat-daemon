@@ -8,7 +8,7 @@ program
 
 const [dir, key] = program.args
 
-async function main() {
+async function main () {
   try {
     if (!dir) {
       throw new Error('Directory is required.')

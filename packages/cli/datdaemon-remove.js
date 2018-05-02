@@ -8,7 +8,7 @@ program
 
 const [key] = program.args
 
-async function main() {
+async function main () {
   try {
     if (!key) {
       throw new Error('Key is required.')
