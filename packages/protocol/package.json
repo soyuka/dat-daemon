@@ -1,6 +1,6 @@
 {
   "name": "@dat-daemon/protocol",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Dat daemon protocol buffer",
   "main": "index.js",
   "scripts": {
