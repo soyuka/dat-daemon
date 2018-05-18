@@ -379,6 +379,12 @@ function defineStatistics () {
     if (!defined(obj.completePeers)) throw new Error("completePeers is required")
     var len = enc[1].encodingLength(obj.completePeers)
     length += 1 + len
+    if (!defined(obj.downloadTotal)) throw new Error("downloadTotal is required")
+    var len = enc[1].encodingLength(obj.downloadTotal)
+    length += 1 + len
+    if (!defined(obj.uploadTotal)) throw new Error("uploadTotal is required")
+    var len = enc[1].encodingLength(obj.uploadTotal)
+    length += 1 + len
     return length
   }
 
@@ -418,6 +424,14 @@ function defineStatistics () {
     buf[offset++] = 69
     enc[1].encode(obj.completePeers, buf, offset)
     offset += enc[1].encode.bytes
+    if (!defined(obj.downloadTotal)) throw new Error("downloadTotal is required")
+    buf[offset++] = 77
+    enc[1].encode(obj.downloadTotal, buf, offset)
+    offset += enc[1].encode.bytes
+    if (!defined(obj.uploadTotal)) throw new Error("uploadTotal is required")
+    buf[offset++] = 85
+    enc[1].encode(obj.uploadTotal, buf, offset)
+    offset += enc[1].encode.bytes
     encode.bytes = offset - oldOffset
     return buf
   }
@@ -435,7 +449,9 @@ function defineStatistics () {
       downloadSpeed: 0,
       uploadSpeed: 0,
       totalPeers: 0,
-      completePeers: 0
+      completePeers: 0,
+      downloadTotal: 0,
+      uploadTotal: 0
     }
     var found0 = false
     var found1 = false
@@ -445,9 +461,11 @@ function defineStatistics () {
     var found5 = false
     var found6 = false
     var found7 = false
+    var found8 = false
+    var found9 = false
     while (true) {
       if (end <= offset) {
-        if (!found0 || !found1 || !found2 || !found3 || !found4 || !found5 || !found6 || !found7) throw new Error("Decoded message is not valid")
+        if (!found0 || !found1 || !found2 || !found3 || !found4 || !found5 || !found6 || !found7 || !found8 || !found9) throw new Error("Decoded message is not valid")
         decode.bytes = offset - oldOffset
         return obj
       }
@@ -494,6 +512,16 @@ function defineStatistics () {
         obj.completePeers = enc[1].decode(buf, offset)
         offset += enc[1].decode.bytes
         found7 = true
+        break
+        case 9:
+        obj.downloadTotal = enc[1].decode(buf, offset)
+        offset += enc[1].decode.bytes
+        found8 = true
+        break
+        case 10:
+        obj.uploadTotal = enc[1].decode(buf, offset)
+        offset += enc[1].decode.bytes
+        found9 = true
         break
         default:
         offset = skip(prefix & 7, buf, offset)

@@ -51,6 +51,8 @@ message Statistics {
   required float uploadSpeed = 6;
   required float totalPeers = 7;
   required float completePeers = 8;
+  required float downloadTotal = 9;
+  required float uploadTotal = 10;
 }
 
 // https://github.com/mafintosh/hyperdrive/blob/master/schema.proto
