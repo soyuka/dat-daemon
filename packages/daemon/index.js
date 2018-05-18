@@ -73,13 +73,16 @@ async function add (message) {
 }
 
 async function remove (message) {
-  const exists = keyExists(message.key)
+  const key = await Dat.resolve(message.key)
+  const exists = keyExists(key)
   if (exists === false) return KEY_NOT_FOUND_ANSWER(message.key, message.id)
   if (exists === undefined) return KEY_REQUIRED_ANSWER(message.id)
 
-  await database.remove(message.key)
-  state.get(message.key).pause()
-  state.delete(message.key)
+  state.get(key).pause()
+  const current = await database.getItem(key)
+  await database.remove(key)
+  pathState.delete(current.path)
+  state.delete(key)
   log(`Removed ${message.key}.`)
   return Answer.encode({message: `${message.key} removed.`, id: message.id, key: message.key})
 }
@@ -109,7 +112,8 @@ async function onmessage (message) {
     return Answer.encode({message: `Unsupported subject, subject must be one of: LIST, ITEM`, failure: 1, id: message.id})
   }
 
-  const exists = keyExists(message.key)
+  const key = await Dat.resolve(message.key)
+  const exists = keyExists(key)
 
   if (exists === undefined) return KEY_REQUIRED_ANSWER(message.id)
   if (exists === false) return KEY_NOT_FOUND_ANSWER(message.key, message.id)
@@ -117,17 +121,17 @@ async function onmessage (message) {
   switch (message.action) {
     // List
     case Instruction.Action.START:
-      state.get(message.key).resume()
+      state.get(key).resume()
       log(`Started ${message.key}.`)
       return Answer.encode({message: `${message.key} started.`, id: message.id, key: message.key})
 
     case Instruction.Action.PAUSE:
-      state.get(message.key).pause()
+      state.get(key).pause()
       log(`Paused ${message.key}.`)
       return Answer.encode({message: `${message.key} paused.`, id: message.id, key: message.key})
 
     case Instruction.Action.LOAD:
-      state.get(message.key).importFiles()
+      state.get(key).importFiles()
       log(`Importing files ${message.key}.`)
       return Answer.encode({message: `${message.key} loaded.`, id: message.id, key: message.key})
 
@@ -136,7 +140,7 @@ async function onmessage (message) {
 
     case Instruction.Action.MKDIR:
       try {
-        await Dat.mkdir(state.get(message.key), message.path)
+        await Dat.mkdir(state.get(key), message.path)
         return Answer.encode({message: `Directory created.`, id: message.id, key: message.key})
       } catch (err) {
         log(`Error mkdir`, err.message)
@@ -145,7 +149,7 @@ async function onmessage (message) {
 
     case Instruction.Action.READDIR:
       try {
-        const list = await Dat.readdir(state.get(message.key), message.path)
+        const list = await Dat.readdir(state.get(key), message.path)
         return Answer.encode({message: `List success.`, id: message.id, files: list, key: message.key})
       } catch (err) {
         log(`Error readdir`, err.message)
@@ -154,7 +158,7 @@ async function onmessage (message) {
 
     case Instruction.Action.STAT:
       try {
-        const stat = await Dat.stat(state.get(message.key), message.path)
+        const stat = await Dat.stat(state.get(key), message.path)
         return Answer.encode({message: `Stat success.`, id: message.id, stat: stat, key: message.key})
       } catch (err) {
         log(`Error stat`, err.message)
@@ -163,7 +167,7 @@ async function onmessage (message) {
 
     case Instruction.Action.RMDIR:
       try {
-        await Dat.rmdir(state.get(message.key), message.path)
+        await Dat.rmdir(state.get(key), message.path)
         return Answer.encode({message: `Directory removed.`, id: message.id, key: message.key})
       } catch (err) {
         log(`Error rmdir`, err.message)
@@ -172,7 +176,7 @@ async function onmessage (message) {
 
     case Instruction.Action.UNLINK:
       try {
-        await Dat.unlink(state.get(message.key), message.path)
+        await Dat.unlink(state.get(key), message.path)
         return Answer.encode({message: `File removed.`, id: message.id, key: message.key})
       } catch (err) {
         log(`Error unlink`, err.message)
@@ -180,7 +184,7 @@ async function onmessage (message) {
       }
 
     case Instruction.Action.INFO:
-      const {stats, network} = state.get(message.key)
+      const {stats, network} = state.get(key)
       const files = stats.get()
 
       const statistics = {
@@ -190,6 +194,8 @@ async function onmessage (message) {
         connected: network.connected,
         downloadSpeed: stats.network.downloadSpeed,
         uploadSpeed: stats.network.uploadSpeed,
+        downloadTotal: stats.network.downloadTotal,
+        uploadTotal: stats.network.uploadTotal,
         totalPeers: stats.peers.total,
         completePeers: stats.peers.complete
       }

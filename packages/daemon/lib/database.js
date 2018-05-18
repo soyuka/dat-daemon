@@ -54,4 +54,18 @@ async function remove (key) {
   return getDb().put(KEY, list, {valueEncoding: List})
 }
 
-module.exports = {put, get, remove}
+async function getItem (key) {
+  const list = await get()
+
+  const index = list.list.findIndex(function (e) {
+    return e.key === key
+  })
+
+  if (!~index) {
+    return false
+  }
+
+  return list.list[index]
+}
+
+module.exports = {put, get, remove, getItem}
