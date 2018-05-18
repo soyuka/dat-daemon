@@ -1,6 +1,6 @@
 {
   "name": "@dat-daemon/tray",
-  "version": "2.0.2",
+  "version": "2.0.5",
   "description": "",
   "main": "index.js",
   "scripts": {},
@@ -17,9 +17,9 @@
     "yackage": "^0.2.3"
   },
   "dependencies": {
-    "@dat-daemon/client": "^2.0.2",
-    "@dat-daemon/http": "^2.0.2",
-    "dat-daemon": "^2.0.2",
+    "@dat-daemon/client": "^2.0.5",
+    "@dat-daemon/http": "^2.0.5",
+    "dat-daemon": "^2.0.5",
     "gui": "^0.4.1",
     "relieve": "^2.2.1",
     "relieve-logger": "^1.0.5"
