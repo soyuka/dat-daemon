@@ -37,7 +37,7 @@ async function DatDaemonClient (url = `ws://localhost:${configuration.port}`) {
       router.set(id, function (data) {
         router.delete(id)
         if (data.failure === 1) {
-          return reject(data.message)
+          return reject(new Error(data.message))
         }
 
         resolve(transform ? transform(data) : data)
@@ -71,7 +71,7 @@ async function DatDaemonClient (url = `ws://localhost:${configuration.port}`) {
     return route(current)
   }
 
-  function removeList (path, key) {
+  function removeList (key) {
     const current = ++id
     client.write(Instruction.encode({
       subject: Subject.LIST,
