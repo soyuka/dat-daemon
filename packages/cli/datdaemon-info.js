@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const Client = require('@dat-daemon/client')
 const program = require('commander')
+const Table = require('cli-table')
 const log = require('./lib/log')
 
 program
@@ -15,7 +16,13 @@ async function main () {
     }
     const client = await Client()
     const answer = await client.info(key)
-    log.info(answer.statistics)
+
+    const table = new Table()
+    for (let i in answer.statistics) {
+      table.push({[i]: answer.statistics[i]})
+    }
+    log.info(`Statistics for ${key}`)
+    console.log(table.toString())
     process.exit(0)
   } catch (err) {
     require('./lib/error')(err)

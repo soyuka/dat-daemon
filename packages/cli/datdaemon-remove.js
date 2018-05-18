@@ -13,6 +13,7 @@ async function main () {
     if (!key) {
       throw new Error('Key is required.')
     }
+
     const client = await Client()
     const answer = await client.removeList(key)
     log.info(answer.message)

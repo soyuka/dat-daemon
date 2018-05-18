@@ -9,6 +9,7 @@
   "dependencies": {
     "@dat-daemon/client": "^2.0.2",
     "chalk": "^2.4.1",
+    "cli-table": "^0.3.1",
     "commander": "^2.15.1"
   },
   "author": "soyuka",
