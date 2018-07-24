@@ -23,7 +23,7 @@ async function open (url) {
   })
 }
 
-async function DatDaemonClient (url = `ws://localhost:${configuration.port}`) {
+async function DatDaemonClient (url = `ws://${configuration.host}:${configuration.port}`) {
   const client = await open(url)
   let id = 0
   /**
