@@ -15,7 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "@dat-daemon/client": "^2.0.5",
+    "dat-daemon": "^2.0.5",
     "dat-link-resolve": "^2.1.0",
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "pump": "^3.0.0",
+    "stream-replacer": "^1.2.1"
   }
 }

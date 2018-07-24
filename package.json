@@ -1,9 +1,9 @@
 {
  "devDependencies": {
-  "lerna": "^2.10.0"
+  "lerna": "^2.10.0",
+  "tape": "^4.9.1"
  },
  "scripts": {
-  "postinstall": "lerna bootstrap",
   "test": "lerna run test"
  }
 }

@@ -14,13 +14,13 @@
   "author": "soyuka",
   "license": "MIT",
   "devDependencies": {
-    "yackage": "^0.2.3"
+    "yackage": "^0.2.6"
   },
   "dependencies": {
     "@dat-daemon/client": "^2.0.5",
     "@dat-daemon/http": "^2.0.5",
     "dat-daemon": "^2.0.5",
-    "gui": "^0.4.1",
+    "gui": "^0.5.0",
     "relieve": "^2.2.1",
     "relieve-logger": "^1.0.5"
   }

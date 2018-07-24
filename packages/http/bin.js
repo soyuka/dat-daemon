@@ -1,37 +1,49 @@
 #!/usr/bin/env node
 const express = require('express')
-const url = require('url')
-const datResolve = require('dat-link-resolve')
 const Client = require('@dat-daemon/client')
 const config = require('dat-daemon/lib/config')()
+const resolve = require('./lib')
+const pump = require('pump')
+const streamReplacer = require('stream-replacer').default
 const app = express()
 
+const replacer = streamReplacer({
+  single: true,
+  pattern: /(dat:\/\/)/,
+  substitute: function (match, tag, done) {
+    done(null, `http://${config.gateway.host}:${config.gateway.port}/`)
+  }
+})
+
 async function main () {
-  const client = await Client(`ws://${config.hostname}:${config.port}`)
+  const client = await Client(`ws://${config.host}:${config.port}`)
 
-  app.get('*', (req, res) => {
-    const q = url.parse(req.url)
+  app.get('*', async (req, res) => {
+    if (req.url === '/') {
+      return res.status(404).end()
+    }
 
-    datResolve(q.href, async function (err, key) {
-      if (err || !key) {
-        res.status(500).send(err)
-        return
+    try {
+      const {key, path} = await resolve(client, req.url)
+
+      console.log('Reading %s/%s', key, path)
+
+      const stream = await client.createReadStream(key, path)
+
+      if (path.endsWith('.html')) {
+        pump(stream, replacer, res, function (err) {
+          if (err) throw err
+        })
+      } else {
+        stream.pipe(res)
       }
 
-      const a = await client.add(config.gateway.sites, key)
-
-      let path = q.pathname
-      if (path.endsWith('/') || !path) {
-        path += 'index.html'
-      }
-
-      const stream = await client.createReadStream(a.key, path)
-
-      stream.pipe(res)
-    })
+    } catch (err) {
+      res.status(500).send({error: err.message})
+    }
   })
 
-  app.listen(config.gateway.port, config.gateway.hostname, () => console.log('Dat gateway listening on port %s!', config.gateway.port))
+  app.listen(config.gateway.port, config.gateway.host, () => console.log('Dat gateway listening on port %s!', config.gateway.port))
 }
 
 main()

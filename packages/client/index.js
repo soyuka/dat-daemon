@@ -8,13 +8,18 @@ const configuration = {
 async function open (url) {
   return new Promise(function (resolve, reject) {
     const ws = Websocket(url)
-    ws.socket.addEventListener('open', function () {
+    function resolver () {
       resolve(ws)
-    })
+      ws.socket.removeEventListener('open', resolver)
+    }
 
-    ws.socket.addEventListener('error', function (err) {
-      reject(err)
-    })
+    function errorer () {
+      reject(ws)
+      ws.socket.removeEventListener('error', errorer)
+    }
+
+    ws.socket.addEventListener('open', resolver)
+    ws.socket.addEventListener('error', errorer)
   })
 }
 
