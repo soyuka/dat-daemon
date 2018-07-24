@@ -1,13 +1,13 @@
 {
   "name": "@dat-daemon/cli",
-  "version": "2.0.6",
+  "version": "2.0.8",
   "description": "Dat daemon client",
   "main": "datdaemon.js",
   "bin": {
     "datdaemon": "./datdaemon.js"
   },
   "dependencies": {
-    "@dat-daemon/client": "^2.0.6",
+    "@dat-daemon/client": "^2.0.8",
     "chalk": "^2.4.1",
     "cli-table": "^0.3.1",
     "commander": "^2.15.1"
