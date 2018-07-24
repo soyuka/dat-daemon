@@ -31,6 +31,7 @@ async function main () {
       const stream = await client.createReadStream(key, path)
 
       if (path.endsWith('.html')) {
+        res.set('Content-Type', 'text/html')
         pump(stream, replacer, res, function (err) {
           if (err) throw err
         })

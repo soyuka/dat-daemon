@@ -32,7 +32,7 @@ module.exports = async function resolve (client, url) {
 
       let path = query.pathname
 
-      if (!path) {
+      if (!path || path === '/') {
         path = 'index.html'
       }
 
