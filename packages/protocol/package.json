@@ -1,6 +1,6 @@
 {
   "name": "@dat-daemon/protocol",
-  "version": "2.0.6",
+  "version": "2.0.10",
   "description": "Dat daemon protocol buffer",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/soyuka/dat-daemon#readme",
   "dependencies": {
-    "@dat-daemon/config": "^1.0.0",
+    "@dat-daemon/config": "^2.0.10",
     "protocol-buffers-encodings": "^1.1.0"
   },
   "devDependencies": {

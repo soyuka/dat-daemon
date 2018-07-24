@@ -1,7 +1,7 @@
 {
   "name": "add-on",
   "private": true,
-  "version": "2.0.6",
+  "version": "2.0.10",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@dat-daemon/config": "^1.0.0",
+    "@dat-daemon/config": "^2.0.10",
     "hyperdrive": "^9.12.3",
     "random-access-storage": "^1.1.1"
   },

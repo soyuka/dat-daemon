@@ -1,6 +1,6 @@
 {
   "name": "@dat-daemon/http",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "Dat daemon http gateway",
   "main": "bin.js",
   "bin": {
@@ -14,9 +14,9 @@
   "author": "soyuka",
   "license": "MIT",
   "dependencies": {
-    "@dat-daemon/client": "^2.0.9",
-    "@dat-daemon/config": "^1.0.0",
-    "dat-daemon": "^2.0.6",
+    "@dat-daemon/client": "^2.0.10",
+    "@dat-daemon/config": "^2.0.10",
+    "dat-daemon": "^2.0.10",
     "dat-link-resolve": "^2.1.0",
     "express": "^4.16.3",
     "pump": "^3.0.0",
