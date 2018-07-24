@@ -1,5 +1,5 @@
 const level = require('level')
-const config = require('./config')()
+const config = require('@dat-daemon/config')()
 const {List} = require('@dat-daemon/protocol')
 
 const KEY = 'list'

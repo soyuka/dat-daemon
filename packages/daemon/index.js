@@ -279,4 +279,4 @@ function close () {
 }
 
 module.exports.close = close
-module.exports.config = require('./lib/config')
+module.exports.config = require('@dat-daemon/config')
