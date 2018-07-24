@@ -37,7 +37,7 @@ function parseConfiguration () {
       console.error('Reading configuration from %s', CONFIG_PATH)
     }
     // read config and remove json comments
-    config = require('fs').readFileSync(CONFIG_PATH).toString().replace(/\s*\/\/.+$/gm, '')
+    config = fs.readFileSync(CONFIG_PATH).toString().replace(/\s*\/\/.+$/gm, '')
   } catch (e) {
     console.error('No configuration file found in the following paths:\n', CONFIG_PATH)
     process.exit(1)

@@ -1,5 +1,5 @@
 const datResolve = require('dat-link-resolve')
-const config = require('dat-daemon/lib/config')()
+const config = require('@dat-daemon/config')()
 const Url = require('url')
 
 module.exports = async function resolve (client, url) {

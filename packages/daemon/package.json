@@ -18,6 +18,7 @@
   "author": "soyuka",
   "license": "MIT",
   "dependencies": {
+    "@dat-daemon/config": "^1.0.0",
     "@dat-daemon/protocol": "^2.0.6",
     "dat-link-resolve": "^2.1.0",
     "dat-node": "^3.5.8",

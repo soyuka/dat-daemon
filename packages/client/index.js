@@ -1,6 +1,6 @@
 const Websocket = require('websocket-stream')
 const {Instruction, Subject, Answer} = require('@dat-daemon/protocol')
-const configuraton = require('dat-daemon/lib/config')()
+const configuration = require('@dat-daemon/config')()
 
 async function open (url) {
   return new Promise(function (resolve, reject) {

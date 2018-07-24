@@ -1,7 +1,7 @@
 const gui = require('gui')
 const Logger = require('relieve-logger')
 const Task = require('relieve/tasks/ScriptTask')
-const config = require('dat-daemon/lib/config')()
+const config = require('@dat-daemon/config')()
 const Client = require('@dat-daemon/client')
 
 async function main () {

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const express = require('express')
 const Client = require('@dat-daemon/client')
-const config = require('dat-daemon/lib/config')()
+const config = require('@dat-daemon/config')()
 const resolve = require('./lib')
 const pump = require('pump')
 const streamReplacer = require('stream-replacer').default

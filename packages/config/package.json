@@ -1,0 +1,19 @@
+{
+  "name": "@dat-daemon/config",
+  "version": "1.0.0",
+  "description": "Dat daemon config",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soyuka/dat-daemon.git"
+  },
+  "keywords": [
+    "dat",
+    "daemon"
+  ],
+  "author": "soyuka",
+  "license": "MIT",
+  "dependencies": {
+    "mkdirp": "*"
+  }
+}
